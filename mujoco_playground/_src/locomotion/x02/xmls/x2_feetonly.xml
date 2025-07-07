@@ -8,19 +8,7 @@
         <geom group="3" contype="1" conaffinity="1" />
       </default>
       <default class="visual">
-        <geom material="black" contype="0" conaffinity="0" group="2" />
-      </default>
-      <default class="mx106">
-        <joint damping="1.7" armature="0.025" frictionloss="0.1" />
-        <position kp="21.0" ctrlrange="-3.141592 3.141592" forcerange="-8 8" />
-      </default>
-      <default class="mx64">
-        <joint damping="0.66" armature="0.012" frictionloss="0.09" />
-        <position kp="12.5" ctrlrange="-3.141592 3.141592" forcerange="-5 5" />
-      </default>
-      <default class="xh-540">
-        <joint damping="1.7" armature="0.025" frictionloss="0.1" />
-        <position kp="21.0" ctrlrange="-3.141592 3.141592" forcerange="-8 8" />
+        <geom contype="0" conaffinity="0" group="2" />
       </default>
       <site size="0.01" rgba="1 0 0 1" group="4"/>
     </default>
@@ -29,7 +17,6 @@
     <flag eulerdamp="disable"/> <!-- this is not the reason for too much memory-->
   </option>
   <asset>
-    <material name="black" rgba="0.2 0.2 0.2 1" />
     <mesh name="pelvis_link" file="pelvis_link.stl"/>
     <mesh name="L_hip_yaw_link" file="L_hip_yaw_link.stl"/>
     <mesh name="L_hip_roll_link" file="L_hip_roll_link.stl"/>

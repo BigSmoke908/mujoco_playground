@@ -43,8 +43,15 @@ import numpy as np
 from orbax import checkpoint as ocp
 from argparse import ArgumentParser
 import pickle
+from mujoco_playground.experimental.utils.plotting import TrainingPlotter
 
 
+
+# Enable persistent compilation cache.
+jax.config.update("jax_compilation_cache_dir", "/tmp/jax_cache")
+jax.config.update("jax_persistent_cache_min_entry_size_bytes", -1)
+jax.config.update("jax_persistent_cache_min_compile_time_secs", 0)
+jax.config.update("jax_persistent_cache_enable_xla_caches", "xla_gpu_per_fusion_autotune_cache_dir")
 parser = ArgumentParser(description="Train a walking agent with joystick control.")
 parser.add_argument('run_name', type=str, help='Name of the run for saving parameters')
 parser.add_argument('-g', '--gpu', type=str, default='0', help='GPU device to use')
@@ -67,10 +74,12 @@ from mujoco_playground.config import locomotion_params
 
 np.set_printoptions(precision=3, suppress=True, linewidth=100)
 
-env_name = 'X02JoystickFlatTerrain'
+env_name = args.env
 env = registry.load(env_name)
 env_cfg = registry.get_default_config(env_name)
 ppo_params = locomotion_params.brax_ppo_config(env_name)
+
+plotter = TrainingPlotter(max_timesteps=ppo_params.num_timesteps, figsize=(15, 10))
 
 x_data, y_data, y_dataerr = [], [], []
 times = [datetime.now()]
@@ -87,18 +96,19 @@ def save_params(ckpt_path, params, step=-1):
     pickle.dump(data, f)
 
 def progress(num_steps, metrics):
+  plotter.update(num_steps, metrics)
+  plotter.save_figure(ckpt_path / f"ppo_training_progress_plots_{num_steps:012}.png")
   times.append(datetime.now())
   x_data.append(num_steps)
   y_data.append(metrics["eval/episode_reward"])
   y_dataerr.append(metrics["eval/episode_reward_std"])
-
-  plt.xlim([0, ppo_params["num_timesteps"] * 1.25])
-  plt.xlabel("# environment steps")
-  plt.ylabel("reward per episode")
-  plt.title(f"y={y_data[-1]:.3f}")
-  plt.errorbar(x_data, y_data, yerr=y_dataerr, color="blue")
-
-  plt.savefig(ckpt_path / f"ppo_training_progress_{num_steps:012}.png", dpi=300, bbox_inches='tight')
+  fig, ax = plt.subplots(1,1)
+  ax.set_ylim([0, ppo_params["num_timesteps"] * 1.25])
+  ax.set_xlabel("# environment steps")
+  ax.set_ylabel("reward per episode")
+  ax.set_title(f"y={y_data[-1]:.3f}")
+  ax.errorbar(x_data, y_data, yerr=y_dataerr, color="blue")
+  fig.savefig(ckpt_path / f"ppo_training_progress_{num_steps:012}.png", dpi=300, bbox_inches='tight')
 
 randomizer = registry.get_domain_randomizer(env_name)
 ppo_training_params = dict(ppo_params)

@@ -25,8 +25,8 @@ from argparse import ArgumentParser
 
 argparser = ArgumentParser()
 argparser.add_argument("-c", "--checkpoint", type=str,required=True)
-argparser.add_argument("-o", "--output", type=str, default="bh_policy.onnx")
-argparser.add_argument("-e", "--env-name", type=str, default="BerkeleyHumanoidJoystickFlatTerrain")
+argparser.add_argument("-o", "--output", type=str, default="x02_policy.onnx")
+argparser.add_argument("-e", "--env-name", type=str, default="X02JoystickFlatTerrain")
 
 args = argparser.parse_args()
 # %%

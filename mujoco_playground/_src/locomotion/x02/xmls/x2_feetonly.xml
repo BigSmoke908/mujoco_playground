@@ -3,8 +3,29 @@
   <default>
     <!--<geom condim="1" contype="0" conaffinity="0"/>-->
     <joint damping="0.1" armature="0.01" frictionloss="0.1"/>
+    <default class="humanoid">
+      <default class="collision">
+        <geom group="3" contype="1" conaffinity="1" />
+      </default>
+      <default class="visual">
+        <geom material="black" contype="0" conaffinity="0" group="2" />
+      </default>
+      <default class="mx106">
+        <joint damping="1.7" armature="0.025" frictionloss="0.1" />
+        <position kp="21.0" ctrlrange="-3.141592 3.141592" forcerange="-8 8" />
+      </default>
+      <default class="mx64">
+        <joint damping="0.66" armature="0.012" frictionloss="0.09" />
+        <position kp="12.5" ctrlrange="-3.141592 3.141592" forcerange="-5 5" />
+      </default>
+      <default class="xh-540">
+        <joint damping="1.7" armature="0.025" frictionloss="0.1" />
+        <position kp="21.0" ctrlrange="-3.141592 3.141592" forcerange="-8 8" />
+      </default>
+      <site size="0.01" rgba="1 0 0 1" group="4"/>
+    </default>
   </default>
-    <option iterations="3" ls_iterations="5" timestep="0.002" integrator="Euler">
+  <option iterations="3" ls_iterations="5" timestep="0.002" integrator="Euler">
     <flag eulerdamp="disable"/> <!-- this is not the reason for too much memory-->
   </option>
   <asset>
@@ -34,17 +55,17 @@
   </asset>
   <worldbody>
     <light name="spotlight" target="pelvis_link" pos="0 0 2" dir="0 0 -1." cutoff="30" mode="targetbodycom"/>
-    <body name="pelvis_link" pos="0 0 0.91">
+    <body name="pelvis_link" pos="0 0 0.91", childclass="humanoid">
+      <joint name="pelvis_link" type="free" limited="false" actuatorfrclimited="false"/>
       <site name="imu"/>
       <inertial pos="-0.000780925 -1.61312e-05 0.320098" quat="0.999982 -6.6303e-05 0.00594371 0.000195653" mass="14.8692" diaginertia="0.548526 0.426111 0.226041"/>
-      <joint name="pelvis_link" type="free" limited="false" actuatorfrclimited="false"/>
       <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="1 1 1 1" mesh="pelvis_link"/>
       <geom type="mesh" rgba="1 1 1 1" mesh="pelvis_link"/>
-      <geom pos="0 0 0.08375" type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="1 1 1 1" mesh="waist_yaw_link"/>
-      <geom pos="0 0 0.08375" type="mesh" rgba="1 1 1 1" mesh="waist_yaw_link"/>
-      <geom pos="0 0 0.1205" type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.823529 0.823529 0.823529 1" mesh="torso_link"/>
-      <geom pos="0 0 0.1205" type="mesh" rgba="0.823529 0.823529 0.823529 1" mesh="torso_link"/>
-      <geom pos="0 0 0.1205" type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="1 0 0 1" mesh="logo_link"/>
+      <geom pos="0 0 0.08375" type="mesh" rgba="1 1 1 1" mesh="waist_yaw_link" class="visual"/>
+      <geom pos="0 0 0.08375" type="mesh" rgba="1 1 1 1" mesh="waist_yaw_link" class="visual"/>
+      <geom pos="0 0 0.1205" type="mesh"  rgba="0.823529 0.823529 0.823529 1" mesh="torso_link" class="visual"/>
+      <geom pos="0 0 0.1205" type="mesh"  rgba="0.823529 0.823529 0.823529 1" mesh="torso_link" class="visual"/>
+      <geom pos="0 0 0.1205" type="mesh"  rgba="1 0 0 1" mesh="logo_link" class="visual"/>
       <geom pos="0 0 0.1205" type="mesh" rgba="1 0 0 1" mesh="logo_link"/>
       <geom pos="0 0 0.485" type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="1 1 1 1" mesh="head_link"/>
       <geom pos="0 0 0.485" type="mesh" rgba="1 1 1 1" mesh="head_link"/>

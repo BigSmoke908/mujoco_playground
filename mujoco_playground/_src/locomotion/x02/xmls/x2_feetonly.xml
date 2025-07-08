@@ -131,17 +131,17 @@
     </body>
   </worldbody>
   <actuator>
-    <motor name="juL" joint="L_hip_yaw"       /> <!-- Leg Left -->
-    <motor name="jsL" joint="L_hip_roll"      />
-    <motor name="jhL" joint="L_hip_pitch"     />
-    <motor name="jkL" joint="L_knee_pitch"    />
-    <motor name="jpL" joint="L_ankle_pitch"   />
+    <position name="juL" joint="L_hip_yaw"       kp="50"/> <!-- Leg Left -->
+    <position name="jsL" joint="L_hip_roll"      kp="50"/>
+    <position name="jhL" joint="L_hip_pitch"     kp="50"/>
+    <position name="jkL" joint="L_knee_pitch"    kp="50"/>
+    <position name="jpL" joint="L_ankle_pitch"   kp="50"/>
 
-    <motor name="juR" joint="R_hip_yaw"       /> <!-- Leg Right -->
-    <motor name="jsR" joint="R_hip_roll"      />
-    <motor name="jhR" joint="R_hip_pitch"     />
-    <motor name="jkR" joint="R_knee_pitch"    />
-    <motor name="jpR" joint="R_ankle_pitch"   />
+    <position name="juR" joint="R_hip_yaw"       kp="50"/> <!-- Leg Right -->
+    <position name="jsR" joint="R_hip_roll"      kp="50"/>
+    <position name="jhR" joint="R_hip_pitch"     kp="50"/>
+    <position name="jkR" joint="R_knee_pitch"    kp="50"/>
+    <position name="jpR" joint="R_ankle_pitch"   kp="50"/>
   </actuator>
   <sensor>
     <gyro site="imu" name="gyro"/>

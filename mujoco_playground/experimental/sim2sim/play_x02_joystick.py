@@ -59,11 +59,11 @@ class OnnxController:
     self._gait_freq = 1.5
     self._phase_dt = 2 * np.pi * self._gait_freq * ctrl_dt
 
-    #self._joystick = Gamepad(
-    #    vel_scale_x=vel_scale_x,
-    #    vel_scale_y=vel_scale_y,
-    #    vel_scale_rot=vel_scale_rot,
-    #)
+    self._joystick = Gamepad(
+        vel_scale_x=vel_scale_x,
+        vel_scale_y=vel_scale_y,
+        vel_scale_rot=vel_scale_rot,
+    )
 
   def get_obs(self, model, data) -> np.ndarray:
     linvel = data.sensor("local_linvel").data

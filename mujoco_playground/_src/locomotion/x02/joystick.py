@@ -87,7 +87,7 @@ def default_config() -> config_dict.ConfigDict:
           base_height_target=0.87,
       ),
       push_config=config_dict.create(
-          enable=False,
+          enable=True,
           interval_range=[5.0, 10.0],
           magnitude_range=[0.1, 2.0],
       ),

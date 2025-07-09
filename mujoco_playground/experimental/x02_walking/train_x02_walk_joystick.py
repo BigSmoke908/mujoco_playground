@@ -43,8 +43,7 @@ import numpy as np
 from orbax import checkpoint as ocp
 from argparse import ArgumentParser
 import pickle
-from mujoco_playground.experimental.utils.plotting import TrainingPlotter
-
+from tqdm import tqdm
 
 
 # Enable persistent compilation cache.
@@ -56,10 +55,12 @@ parser = ArgumentParser(description="Train a walking agent with joystick control
 parser.add_argument('run_name', type=str, help='Name of the run for saving parameters')
 parser.add_argument('-g', '--gpu', type=str, default='0', help='GPU device to use')
 parser.add_argument('-e', '--env', type=str, default='X02JoystickFlatTerrain')
+parser.add_argument('-w', '--wandb', action='store_true', help='Enable Weights & Biases logging')
 args = parser.parse_args()
 
 ckpt_path = epath.Path(__file__).parent / "checkpoints" / f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{args.run_name}"
 ckpt_path.mkdir(parents=True, exist_ok=True)
+
 
 # Tell XLA to use Triton GEMM, this improves steps/sec by ~30% on some GPUs
 xla_flags = os.environ.get('XLA_FLAGS', '')
@@ -79,10 +80,25 @@ env = registry.load(env_name)
 env_cfg = registry.get_default_config(env_name)
 ppo_params = locomotion_params.brax_ppo_config(env_name)
 
-plotter = TrainingPlotter(max_timesteps=ppo_params.num_timesteps, figsize=(15, 10))
+
+if args.wandb:
+  import wandb
+  run = wandb.init(project="mujoco_playground", 
+                   entity="bitbots",
+                   name=args.run_name,
+                   #dir=ckpt_path,
+                   config={
+                          "env": args.env,
+                          "gpu": args.gpu,
+                          "run_name": args.run_name,} | dict(ppo_params) | dict(env_cfg))
+else:
+  from mujoco_playground.experimental.utils.plotting import TrainingPlotter
+  plotter = TrainingPlotter(max_timesteps=ppo_params.num_timesteps, figsize=(15, 10))
 
 x_data, y_data, y_dataerr = [], [], []
 times = [datetime.now()]
+
+pbar = tqdm(total=ppo_params.num_timesteps, desc="Training Progress", unit="steps", dynamic_ncols=True)
 
 def save_params(ckpt_path, params, step=-1):
   normalizer_params, policy_params, value_params = params
@@ -96,19 +112,24 @@ def save_params(ckpt_path, params, step=-1):
     pickle.dump(data, f)
 
 def progress(num_steps, metrics):
-  plotter.update(num_steps, metrics)
-  plotter.save_figure(ckpt_path / f"ppo_training_progress_plots_{num_steps:012}.png")
-  times.append(datetime.now())
-  x_data.append(num_steps)
-  y_data.append(metrics["eval/episode_reward"])
-  y_dataerr.append(metrics["eval/episode_reward_std"])
-  fig, ax = plt.subplots(1,1)
-  ax.set_ylim([0, ppo_params["num_timesteps"] * 1.25])
-  ax.set_xlabel("# environment steps")
-  ax.set_ylabel("reward per episode")
-  ax.set_title(f"y={y_data[-1]:.3f}")
-  ax.errorbar(x_data, y_data, yerr=y_dataerr, color="blue")
-  fig.savefig(ckpt_path / f"ppo_training_progress_{num_steps:012}.png", dpi=300, bbox_inches='tight')
+  pbar.update(num_steps - pbar.n)
+  if args.wandb:
+    metrics_name_replaced = {k.replace("eval/episode_reward/", "rewards/"): v for k, v in metrics.items()}
+    wandb.log(metrics_name_replaced, step=num_steps)
+  else:
+    plotter.update(num_steps, metrics)
+    plotter.save_figure(ckpt_path / f"ppo_training_progress_plots_{num_steps:012}.png")
+    times.append(datetime.now())
+    x_data.append(num_steps)
+    y_data.append(metrics["eval/episode_reward"])
+    y_dataerr.append(metrics["eval/episode_reward_std"])
+    fig, ax = plt.subplots(1,1)
+    ax.set_ylim([0, ppo_params["num_timesteps"] * 1.25])
+    ax.set_xlabel("# environment steps")
+    ax.set_ylabel("reward per episode")
+    ax.set_title(f"y={y_data[-1]:.3f}")
+    ax.errorbar(x_data, y_data, yerr=y_dataerr, color="blue")
+    fig.savefig(ckpt_path / f"ppo_training_progress_{num_steps:012}.png", dpi=300, bbox_inches='tight')
 
 randomizer = registry.get_domain_randomizer(env_name)
 ppo_training_params = dict(ppo_params)

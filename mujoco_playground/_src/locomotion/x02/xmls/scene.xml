@@ -2,6 +2,7 @@
   <include file="x2_feetonly.xml"/>
 
   <statistic center="0 0 0.1" extent="0.8" meansize="0.04"/>
+  
 
   <visual>
     <headlight diffuse=".8 .8 .8" ambient=".2 .2 .2" specular="1 1 1"/>
@@ -28,12 +29,12 @@
   <keyframe>
     <key name="home"
       qpos="
-    0 0 0.91
-    1 0 0 0
-    0.0 0.0 0.0 0.0 0.0 
-    0.0 0.0 0.0 0.0 0.0"
+    0 0 0.87
+    0.9987503 0 0.0499792 0
+    0.0 0.0 0.3 -0.6 0.4 
+    0.0 0.0 0.3 -0.6 0.4 "
       ctrl="
-    0.0 0.0 0.0 0.0 0.0
-    0.0 0.0 0.0 0.0 0.0"/>
+    0.0 0.0 0.3 -0.6 0.4 
+    0.0 0.0 0.3 -0.6 0.4 "/>
   </keyframe>
 </mujoco>

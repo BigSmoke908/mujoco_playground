@@ -32,7 +32,7 @@ from mujoco_playground._src.locomotion.x02 import x02_constants as consts
 
 def default_config() -> config_dict.ConfigDict:
   return config_dict.create(
-      ctrl_dt=0.02,
+      ctrl_dt=0.01,
       sim_dt=0.002,
       episode_length=1000,
       action_repeat=1,

@@ -73,7 +73,7 @@ def default_config() -> config_dict.ConfigDict:
               feet_height=0.0,
               feet_phase=1.0,
               # Other rewards.
-              stand_still=0.0,
+              stand_still=-1.0,
               alive=0.0,
               termination=-1.0,
               # Pose related rewards.

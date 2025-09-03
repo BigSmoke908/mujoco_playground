@@ -40,7 +40,6 @@ class KeyboardGamepad:
         vel_scale_rot=1.0,
         acceleration=0.1,  # Added acceleration
         max_speed=5.0,  # Added maximum speed
-        deadzone=0.01,  # Added deadzone
     ):
         """
         Initializes the KeyboardGamepad.

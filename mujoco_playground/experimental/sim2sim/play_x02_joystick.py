@@ -56,7 +56,7 @@ class OnnxController:
     self._n_substeps = n_substeps
 
     self._phase = np.array([0.0, np.pi])
-    self._gait_freq = 1.5
+    self._gait_freq = 1.25
     self._phase_dt = 2 * np.pi * self._gait_freq * ctrl_dt
 
     self._joystick = Gamepad(

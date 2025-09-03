@@ -32,7 +32,7 @@ from mujoco_playground._src.locomotion.x02 import x02_constants as consts
 
 def default_config() -> config_dict.ConfigDict:
   return config_dict.create(
-      ctrl_dt=0.01,
+      ctrl_dt=0.02,
       sim_dt=0.002,
       episode_length=1000,
       action_repeat=1,
@@ -72,6 +72,7 @@ def default_config() -> config_dict.ConfigDict:
               feet_slip=-0.25,
               feet_height=0.0,
               feet_phase=1.0,
+              flat_foot=-1.0,
               # Other rewards.
               stand_still=0.0,
               alive=0.0,
@@ -140,8 +141,8 @@ class Joystick(x02_base.X02Base):
 
     # fmt: off
     self._weights = jp.array([
-        1.0, 1.0, 0.01, 0.01, 1.0,  # left leg.
-        1.0, 1.0, 0.01, 0.01, 1.0,  # right leg.
+        1.0, 1.0, 0.01, 0.01, 0.01,  # left leg.
+        1.0, 1.0, 0.01, 0.01, 0.01,  # right leg.
     ])
     # fmt: on
 
@@ -474,6 +475,7 @@ class Joystick(x02_base.X02Base):
             self._config.reward_config.max_foot_height,
             info["command"],
         ),
+        "flat_foot": self._cost_flat_foot(data, contact),
         # Other rewards.
         "alive": self._reward_alive(),
         "termination": self._cost_termination(done),
@@ -674,6 +676,15 @@ class Joystick(x02_base.X02Base):
     # cmd_norm = jp.linalg.norm(commands)
     # reward *= cmd_norm > 0.1  # No reward for zero commands.
     return reward
+
+  def _cost_flat_foot(
+      self,
+      data: mjx.Data
+  ) -> jax.Array:
+    foot_xmat = data.site_xmat[self._feet_site_id]
+    foot_zaxis = foot_xmat[:, 2, :]
+    zaxis_error = jp.sum(jp.square(foot_zaxis - jp.array([0, 0, 1])), axis=-1)
+    return jp.sum(jp.exp(-zaxis_error / 0.1))
 
   def sample_command(self, rng: jax.Array) -> jax.Array:
     rng1, rng2, rng3, rng4 = jax.random.split(rng, 4)

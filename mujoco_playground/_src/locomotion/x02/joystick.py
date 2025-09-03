@@ -486,35 +486,35 @@ class Joystick(x02_base.X02Base):
         "dof_pos_limits": self._cost_joint_pos_limits(data.qpos[7:]),
         "pose": self._cost_pose(data.qpos[7:]),
     }
-    return {
-          # Tracking rewards.
-          "tracking_lin_vel": jp.zeros_like(data.qpos[2]),
-          "tracking_ang_vel": jp.zeros_like(data.qpos[2]),
-          # Base-related rewards.
-          "lin_vel_z": jp.zeros_like(data.qpos[2]),
-          "ang_vel_xy": jp.zeros_like(data.qpos[2]),
-          "orientation": jp.zeros_like(data.qpos[2]), #self._cost_orientation(self.get_gravity(data)),
-          "base_height": jp.zeros_like(data.qpos[2]), #self._cost_base_height(data.qpos[2]),
-          # Energy related rewards.
-          "torques": jp.zeros_like(data.qpos[2]),
-          "action_rate": jp.zeros_like(data.qpos[2]),
-          "energy": jp.zeros_like(data.qpos[2]),
-          # Feet related rewards.
-          "feet_slip": jp.zeros_like(data.qpos[2]),
-          "feet_clearance": jp.zeros_like(data.qpos[2]),
-          "feet_height": jp.zeros_like(data.qpos[2]),
-          "feet_air_time": jp.zeros_like(data.qpos[2]),
-          "feet_phase": jp.zeros_like(data.qpos[2]),
-          # Other rewards.
-          "alive": jp.ones_like(data.qpos[2]),#self._reward_alive(),
-          "termination": jp.zeros_like(data.qpos[2]),
-          "stand_still": jp.zeros_like(data.qpos[2]),
-          # Pose related rewards.
-          "joint_deviation_hip": jp.zeros_like(data.qpos[2]),
-          "joint_deviation_knee": jp.zeros_like(data.qpos[2]),
-          "dof_pos_limits": jp.zeros_like(data.qpos[2]),
-          "pose": jp.zeros_like(data.qpos[2]),
-      }
+    #return {
+    #      # Tracking rewards.
+    #      "tracking_lin_vel": jp.zeros_like(data.qpos[2]),
+    #      "tracking_ang_vel": jp.zeros_like(data.qpos[2]),
+    #      # Base-related rewards.
+    #      "lin_vel_z": jp.zeros_like(data.qpos[2]),
+    #      "ang_vel_xy": jp.zeros_like(data.qpos[2]),
+    #      "orientation": jp.zeros_like(data.qpos[2]), #self._cost_orientation(self.get_gravity(data)),
+    #      "base_height": jp.zeros_like(data.qpos[2]), #self._cost_base_height(data.qpos[2]),
+    #      # Energy related rewards.
+    #      "torques": jp.zeros_like(data.qpos[2]),
+    #      "action_rate": jp.zeros_like(data.qpos[2]),
+    #      "energy": jp.zeros_like(data.qpos[2]),
+    #      # Feet related rewards.
+    #      "feet_slip": jp.zeros_like(data.qpos[2]),
+    #      "feet_clearance": jp.zeros_like(data.qpos[2]),
+    #      "feet_height": jp.zeros_like(data.qpos[2]),
+    #      "feet_air_time": jp.zeros_like(data.qpos[2]),
+    #      "feet_phase": jp.zeros_like(data.qpos[2]),
+    #      # Other rewards.
+    #      "alive": jp.ones_like(data.qpos[2]),#self._reward_alive(),
+    #      "termination": jp.zeros_like(data.qpos[2]),
+    #      "stand_still": jp.zeros_like(data.qpos[2]),
+    #      # Pose related rewards.
+    #      "joint_deviation_hip": jp.zeros_like(data.qpos[2]),
+    #      "joint_deviation_knee": jp.zeros_like(data.qpos[2]),
+    #      "dof_pos_limits": jp.zeros_like(data.qpos[2]),
+    #      "pose": jp.zeros_like(data.qpos[2]),
+    #  }
 
   # Tracking rewards.
 

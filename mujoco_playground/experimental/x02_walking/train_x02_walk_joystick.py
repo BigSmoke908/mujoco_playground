@@ -113,13 +113,13 @@ def save_params(ckpt_path, params, step=-1):
 
 def progress(num_steps, metrics):
   pbar.update(num_steps - pbar.n)
+  times.append(datetime.now())
   if args.wandb:
     metrics_name_replaced = {k.replace("eval/episode_reward/", "rewards/"): v for k, v in metrics.items()}
     wandb.log(metrics_name_replaced, step=num_steps)
   else:
     plotter.update(num_steps, metrics)
     plotter.save_figure(ckpt_path / f"ppo_training_progress_plots_{num_steps:012}.png")
-    times.append(datetime.now())
     x_data.append(num_steps)
     y_data.append(metrics["eval/episode_reward"])
     y_dataerr.append(metrics["eval/episode_reward_std"])

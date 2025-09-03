@@ -112,7 +112,6 @@ def save_params(ckpt_path, params, step=-1):
     pickle.dump(data, f)
 
 def progress(num_steps, metrics):
-  pbar.update(num_steps - pbar.n)
   times.append(datetime.now())
   if args.wandb:
     metrics_name_replaced = {k.replace("eval/episode_reward/", "rewards/"): v for k, v in metrics.items()}
@@ -130,6 +129,7 @@ def progress(num_steps, metrics):
     ax.set_title(f"y={y_data[-1]:.3f}")
     ax.errorbar(x_data, y_data, yerr=y_dataerr, color="blue")
     fig.savefig(ckpt_path / f"ppo_training_progress_{num_steps:012}.png", dpi=300, bbox_inches='tight')
+  pbar.update(num_steps - pbar.n)
 
 randomizer = registry.get_domain_randomizer(env_name)
 ppo_training_params = dict(ppo_params)

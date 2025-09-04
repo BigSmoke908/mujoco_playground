@@ -63,7 +63,7 @@ def default_config() -> config_dict.ConfigDict:
               orientation=-1.0,
               base_height=0.0,
               # Energy related rewards.
-              torques=-2.5e-5,
+              torques=-2.5e-4,
               action_rate=-0.01,
               energy=0.0,
               # Feet related rewards.
@@ -73,6 +73,7 @@ def default_config() -> config_dict.ConfigDict:
               feet_height=0.0,
               feet_phase=1.0,
               flat_foot=0.25,
+              #feet contact force
               # Other rewards.
               stand_still=0.0,
               alive=0.0,

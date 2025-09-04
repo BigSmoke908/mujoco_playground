@@ -86,7 +86,7 @@ def domain_randomize(model: mjx.Model, rng: jax.Array):
     noise = jax.random.uniform(
         key, shape=(10,), minval=0.5, maxval=2.0
     )
-    actuator_bias = model.actuator_biasprm.at[:, 2].set(model.actuator_biasprm[:, 2] * noise)
+    actuator_bias = actuator_bias.at[:, 2].set(actuator_bias[:,2] * noise)
 
     # Randomize com of torso: +U(-0.07, 0.07).
     rng, key = jax.random.split(rng)

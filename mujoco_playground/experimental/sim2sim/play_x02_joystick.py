@@ -75,7 +75,7 @@ class OnnxController:
     phase = np.concatenate([np.cos(self._phase), np.sin(self._phase)])
     command = self._joystick.get_command()
     obs = np.hstack([
-        linvel,
+        #linvel,
         gyro,
         gravity,
         command,
@@ -115,7 +115,7 @@ def load_callback(model=None, data=None):
   model.opt.timestep = sim_dt
 
   policy = OnnxController(
-      policy_path=(_ONNX_DIR / "stand_still.onnx").as_posix(),
+      policy_path=(_ONNX_DIR / "kv_fixed.onnx").as_posix(),
       default_angles=np.array(model.keyframe("home").qpos[7:]),
       ctrl_dt=ctrl_dt,
       n_substeps=n_substeps,

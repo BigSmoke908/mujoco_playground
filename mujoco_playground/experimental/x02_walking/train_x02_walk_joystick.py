@@ -44,7 +44,7 @@ from orbax import checkpoint as ocp
 from argparse import ArgumentParser
 import pickle
 from tqdm import tqdm
-
+from mujoco_playground.experimental.x02_walking.convert_to_onnx import conv_to_onnx
 
 # Enable persistent compilation cache.
 jax.config.update("jax_compilation_cache_dir", "/tmp/jax_cache")
@@ -166,3 +166,4 @@ print(f"time to jit: {times[1] - times[0]}")
 print(f"time to train: {times[-1] - times[1]}")
 
 save_params(ckpt_path, params)
+conv_to_onnx(ckpt_path / "params.pkl", f"{args.run_name}.onnx", env_name)

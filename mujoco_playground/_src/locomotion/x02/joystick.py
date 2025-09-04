@@ -72,7 +72,7 @@ def default_config() -> config_dict.ConfigDict:
               feet_slip=-0.25,
               feet_height=0.0,
               feet_phase=1.0,
-              flat_foot=-1.0,
+              flat_foot=0.25,
               # Other rewards.
               stand_still=0.0,
               alive=0.0,
@@ -475,7 +475,7 @@ class Joystick(x02_base.X02Base):
             self._config.reward_config.max_foot_height,
             info["command"],
         ),
-        "flat_foot": self._cost_flat_foot(data),
+        "flat_foot": self._reward_flat_foot(data),
         # Other rewards.
         "alive": self._reward_alive(),
         "termination": self._cost_termination(done),
@@ -677,7 +677,7 @@ class Joystick(x02_base.X02Base):
     # reward *= cmd_norm > 0.1  # No reward for zero commands.
     return reward
 
-  def _cost_flat_foot(
+  def _reward_flat_foot(
       self,
       data: mjx.Data
   ) -> jax.Array:

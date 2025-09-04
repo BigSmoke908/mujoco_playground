@@ -131,17 +131,17 @@
     </body>
   </worldbody>
   <actuator>
-    <position name="juL" joint="L_hip_yaw"       kp="100"/> <!-- Leg Left -->
-    <position name="jsL" joint="L_hip_roll"      kp="100"/>
-    <position name="jhL" joint="L_hip_pitch"     kp="100"/>
-    <position name="jkL" joint="L_knee_pitch"    kp="150"/>
-    <position name="jpL" joint="L_ankle_pitch"   kp="40"/>
+    <position name="juL" joint="L_hip_yaw"       kp="100" kv="1"/> <!-- Leg Left -->
+    <position name="jsL" joint="L_hip_roll"      kp="100" kv="5"/>
+    <position name="jhL" joint="L_hip_pitch"     kp="100" kv="5"/>
+    <position name="jkL" joint="L_knee_pitch"    kp="150" kv="5"/>
+    <position name="jpL" joint="L_ankle_pitch"   kp="40"  kv="2"/>
 
-    <position name="juR" joint="R_hip_yaw"       kp="100"/> <!-- Leg Right -->
-    <position name="jsR" joint="R_hip_roll"      kp="100"/>
-    <position name="jhR" joint="R_hip_pitch"     kp="100"/>
-    <position name="jkR" joint="R_knee_pitch"    kp="150"/>
-    <position name="jpR" joint="R_ankle_pitch"   kp="40"/>
+    <position name="juR" joint="R_hip_yaw"       kp="100" kv="1"/> <!-- Leg Right -->
+    <position name="jsR" joint="R_hip_roll"      kp="100" kv="5"/>
+    <position name="jhR" joint="R_hip_pitch"     kp="100" kv="5"/>
+    <position name="jkR" joint="R_knee_pitch"    kp="150" kv="5"/>
+    <position name="jpR" joint="R_ankle_pitch"   kp="40"  kv="2"/>
   </actuator>
   <sensor>
     <gyro site="imu" name="gyro"/>

@@ -73,13 +73,20 @@ def domain_randomize(model: mjx.Model, rng: jax.Array):
     )
     dof_damping = model.dof_damping.at[6:].set(damping)
 
-    # Scale actuator gains: *U(0.2, 5.0).
+    # Scale actuator kp: *U(0.5, 5.0).
     rng, key = jax.random.split(rng)
     noise = jax.random.uniform(
         key, shape=(10,), minval=0.5, maxval=5.0
     )
     actuator_gain = model.actuator_gainprm.at[:, 0].set(model.actuator_gainprm[:, 0] * noise)
     actuator_bias = model.actuator_biasprm.at[:, 1].set(model.actuator_biasprm[:, 1] * noise)
+
+    # Scale actuator kv: *U(0.5, 2.0).
+    rng, key = jax.random.split(rng)
+    noise = jax.random.uniform(
+        key, shape=(10,), minval=0.5, maxval=2.0
+    )
+    actuator_bias = model.actuator_biasprm.at[:, 2].set(model.actuator_biasprm[:, 2] * noise)
 
     # Randomize com of torso: +U(-0.07, 0.07).
     rng, key = jax.random.split(rng)

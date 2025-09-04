@@ -387,19 +387,19 @@ class Joystick(x02_base.X02Base):
 
     linvel = self.get_local_linvel(data)
     info["rng"], noise_rng = jax.random.split(info["rng"])
-    noisy_linvel = (
-        linvel
-        + (2 * jax.random.uniform(noise_rng, shape=linvel.shape) - 1)
-        * self._config.noise_config.level
-        * self._config.noise_config.scales.linvel
-    )
+    #noisy_linvel = (
+    #    linvel
+    #    + (2 * jax.random.uniform(noise_rng, shape=linvel.shape) - 1)
+    #    * self._config.noise_config.level
+    #    * self._config.noise_config.scales.linvel
+    #)
 
     state = jp.hstack([
-        noisy_linvel,  # 3
+        #noisy_linvel,  # 3
         noisy_gyro,  # 3
         noisy_gravity,  # 3
         info["command"],  # 3
-        noisy_joint_angles - self._default_pose,  # 12
+        noisy_joint_angles - self._default_pose,  # 10
         noisy_joint_vel,  # 12
         info["last_act"],  # 12
         phase,

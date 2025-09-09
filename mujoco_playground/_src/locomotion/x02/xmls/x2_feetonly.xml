@@ -1,8 +1,7 @@
 <mujoco model="x2">
   <compiler angle="radian" meshdir="./meshes/"/>
   <default>
-    <!--<geom condim="1" contype="0" conaffinity="0"/>-->
-    <joint damping="2.0" armature="0.005" frictionloss="0.1" actuatorfrcrange="-60 60"/>
+    <joint damping="0.1" armature="0.01" frictionloss="0.01" actuatorfrcrange="-60 60"/>
     <default class="humanoid">
       <default class="collision">
         <geom group="3" contype="1" conaffinity="1" />

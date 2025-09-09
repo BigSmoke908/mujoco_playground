@@ -146,7 +146,7 @@
                 <geom type="cylinder" name="r_foot01" size="0.050 0.005" pos="0.1 -0.002 -0.095" rgba="1 0 0 1" class="collision"/>
                 <geom type="box" name="r_foot02" size="0.1 0.039 0.005" pos="0.01 0 -0.095" rgba="1 0 0 1" class="collision"/>
 
-                <site name="r_foot" pos="0 0 --0.095" />
+                <site name="r_foot" pos="0 0 -0.095" />
               </body>
             </body>
           </body>

@@ -85,8 +85,8 @@ def default_config() -> config_dict.ConfigDict:
               pose=-1.0,
           ),
           tracking_sigma=0.5,
-          max_foot_height=0.1,
-          base_height_target=0.70,
+          max_foot_height=0.12,
+          base_height_target=0.7, # does not do anything without base height reward scalar
       ),
       push_config=config_dict.create(
           enable=True,

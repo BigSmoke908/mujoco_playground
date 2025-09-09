@@ -93,9 +93,9 @@
                 <geom name="l_foot07" size="0.005" pos="0.08    0.047 -0.095" rgba="1 1 1 1"/>
                 <geom name="l_foot08" size="0.005" pos="0.08   -0.047 -0.095" rgba="1 1 1 1"/>
                 <geom name="l_foot09" size="0.005" pos="0.12    0.038 -0.095" rgba="1 1 1 1"/>
-                <!--
                 <geom name="l_foot10" size="0.005" pos="0.12   -0.045 -0.095" rgba="1 1 1 1"/>
                 <geom name="l_foot11" size="0.005" pos="0.15   -0.01  -0.095" rgba="1 1 1 1"/>
+                <!--
                 <geom type="box" name="l_foot_bb" size="0.115 0.039 0.005" pos="0.02 0 -0.087" rgba="1 0 0 1" class="collision"/>
                 -->
                 <site name="l_foot" pos="0 0 -0.087" />

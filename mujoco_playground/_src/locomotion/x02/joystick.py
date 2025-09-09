@@ -155,9 +155,15 @@ class Joystick(x02_base.X02Base):
         [self._mj_model.site(name).id for name in consts.FEET_SITES]
     )
     self._floor_geom_id = self._mj_model.geom("floor").id
-    self._feet_geom_id = np.array(
-        [self._mj_model.geom(name).id for name in consts.FEET_GEOMS]
+    
+    self._left_feet_geom_id = np.array(
+        [self._mj_model.geom(name).id for name in consts.LEFT_FEET_GEOMS]
     )
+    self._right_feet_geom_id = np.array(
+        [self._mj_model.geom(name).id for name in consts.RIGHT_FEET_GEOMS]
+    )
+    self._feet_geom_id = np.concatenate([self._left_feet_geom_id, self._right_feet_geom_id])
+    
 
     foot_linvel_sensor_adr = []
     for site in consts.FEET_SITES:
@@ -285,10 +291,16 @@ class Joystick(x02_base.X02Base):
     )
     state.info["motor_targets"] = motor_targets
 
-    contact = jp.array([
+
+    left_feet_contact = jp.array([
         geoms_colliding(data, geom_id, self._floor_geom_id)
-        for geom_id in self._feet_geom_id
+        for geom_id in self._left_feet_geom_id
     ])
+    right_feet_contact = jp.array([
+        geoms_colliding(data, geom_id, self._floor_geom_id)
+        for geom_id in self._right_feet_geom_id
+    ])
+    contact = jp.hstack([jp.any(left_feet_contact), jp.any(right_feet_contact)])
     contact_filt = contact | state.info["last_contact"]
     first_contact = (state.info["feet_air_time"] > 0.0) * contact_filt
     state.info["feet_air_time"] += self.dt
@@ -421,7 +433,9 @@ class Joystick(x02_base.X02Base):
         joint_vel,
         root_height,  # 1
         data.actuator_force,  # 12
-        contact,  # 2
+        jp.any(contact[:12]),
+        jp.any(contact[12:]),  # 2
+        #contact,  # 2
         feet_vel,  # 4*3
         info["feet_air_time"],  # 2
     ])

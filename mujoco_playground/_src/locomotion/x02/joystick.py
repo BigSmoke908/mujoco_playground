@@ -73,6 +73,7 @@ def default_config() -> config_dict.ConfigDict:
               feet_height=0.0,
               feet_phase=1.0,
               flat_foot=0.25,
+              horizontal_foot_clearance=0.25,
               #feet contact force
               # Other rewards.
               stand_still=0.0,
@@ -87,6 +88,7 @@ def default_config() -> config_dict.ConfigDict:
           tracking_sigma=0.5,
           max_foot_height=0.12,
           base_height_target=0.7, # does not do anything without base height reward scalar
+          minimal_horizontal_foot_clearance=0.1, # meters
       ),
       push_config=config_dict.create(
           enable=True,
@@ -491,6 +493,7 @@ class Joystick(x02_base.X02Base):
             info["command"],
         ),
         "flat_foot": self._reward_flat_foot(data),
+        "horizontal_foot_clearance": self._reward_horizontal_foot_clearance(data),
         # Other rewards.
         "alive": self._reward_alive(),
         "termination": self._cost_termination(done),
@@ -700,6 +703,13 @@ class Joystick(x02_base.X02Base):
     foot_zaxis = foot_xmat[:, 2, :]
     zaxis_error = jp.sum(jp.square(foot_zaxis - jp.array([0, 0, 1])), axis=-1)
     return jp.sum(jp.exp(-zaxis_error / 0.1))
+
+  def _reward_horizontal_foot_clearance(self, data: mjx.Data) -> jax.Array:
+    foot_pos = data.site_xpos[self._feet_site_id]
+    foot_xy = foot_pos[:, :2]
+    horizontal_foot_distance = jp.sum(jp.square(foot_xy), axis=-1)
+    too_close = horizontal_foot_distance < self._config.reward_config.minimal_horizontal_foot_clearance
+    return -jp.sum(too_close * (self._config.reward_config.minimal_horizontal_foot_clearance - horizontal_foot_distance))
 
   def sample_command(self, rng: jax.Array) -> jax.Array:
     rng1, rng2, rng3, rng4 = jax.random.split(rng, 4)

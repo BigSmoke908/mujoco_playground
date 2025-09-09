@@ -122,17 +122,27 @@
               <joint name="R_knee_pitch" pos="0 0 0" axis="0 -1 0" range="-2.3561 0" actuatorfrcrange="-100 100" damping="4"/>
               <geom type="mesh" rgba="1 1 1 1" mesh="R_knee_pitch_link" class="visual"/>
               <body name="R_ankle_pitch_link" pos="0 0 -0.35">
-<!--                <inertial pos="0.0393998 0.00023708 -0.0784145" quat="0.92388 0 0.382683 0" mass="0.556161" diaginertia="0.0100029 0.01 0.0099971"/>-->
-                <inertial pos="0.0393998 0.00023708 -0.0784145" quat="0 0.705556 0 0.708654" mass="0.556161" diaginertia="0.00260004 0.00215 0.000549961"/>
+<!--            <inertial pos="0.0393998 0.00023708 -0.0784145" quat="0.92388 0 0.382683 0" mass="0.556161" diaginertia="0.0100029 0.01 0.0099971"/>
+                <inertial pos="0.0393998 0.00023708 -0.0784145" quat="0 0.705556 0 0.708654" mass="0.556161" diaginertia="0.00260004 0.00215 0.000549961"/>-->
+                <inertial pos="0.0393998 0.00023708 -0.0784145" quat="0.92388 0 0.382683 0" mass="0.556161" diaginertia="0.01 0.01 0.01"/>
                 <joint name="R_ankle_pitch" pos="0 0 0" axis="0 -1 0" range="-1.2217 1.2217" actuatorfrcrange="-30 30"/>
                 <geom type="mesh" rgba="1 1 1 1" mesh="R_ankle_pitch_link" class="visual"/>
-                <!--<geom name="r_foot1" size="0.005" pos="-0.095 0 -0.087" rgba="1 1 1 1"/>
-                <geom name="r_foot2" size="0.005" pos="-0.052 0.028 -0.087" rgba="1 1 1 1"/>
-                <geom name="r_foot3" size="0.005" pos="-0.052 -0.026 -0.087" rgba="1 1 1 1"/>
-                <geom name="r_foot4" size="0.005" pos="0.075 0.038 -0.087" rgba="1 1 1 1"/>
-                <geom name="r_foot5" size="0.005" pos="0.075 -0.038 -0.087" rgba="1 1 1 1"/>
-                <geom name="r_foot6" size="0.005" pos="0.136 0 -0.087" rgba="1 1 1 1"/>-->
+
+                <geom name="r_foot00" size="0.005" pos="-0.118  0     -0.095" rgba="1 1 1 1"/>
+                <geom name="r_foot01" size="0.005" pos="-0.075  0.039 -0.095" rgba="1 1 1 1"/>
+                <geom name="r_foot02" size="0.005" pos="-0.075 -0.039 -0.095" rgba="1 1 1 1"/>
+                <geom name="r_foot03" size="0.005" pos="-0.025  0.032 -0.095" rgba="1 1 1 1"/>
+                <geom name="r_foot04" size="0.005" pos="-0.025 -0.037 -0.095" rgba="1 1 1 1"/>
+                <geom name="r_foot05" size="0.005" pos=" 0.025  0.033 -0.095" rgba="1 1 1 1"/>
+                <geom name="r_foot06" size="0.005" pos=" 0.025 -0.041 -0.095" rgba="1 1 1 1"/>
+                <geom name="r_foot07" size="0.005" pos="0.08    0.047 -0.095" rgba="1 1 1 1"/>
+                <geom name="r_foot08" size="0.005" pos="0.08   -0.047 -0.095" rgba="1 1 1 1"/>
+                <geom name="r_foot09" size="0.005" pos="0.12    0.045 -0.095" rgba="1 1 1 1"/>
+                <geom name="r_foot10" size="0.005" pos="0.12   -0.038 -0.095" rgba="1 1 1 1"/>
+                <geom name="r_foot11" size="0.005" pos="0.15    0.01  -0.095" rgba="1 1 1 1"/>
+                <!--
                 <geom type="box" name="r_foot_bb" size="0.115 0.039 0.005" pos="0.02 0 -0.087" rgba="1 0 0 1" class="collision"/>
+                -->
                 <site name="r_foot" pos="0 0 -0.087" />
               </body>
             </body>

@@ -96,9 +96,12 @@
                 <geom name="l_foot10" size="0.005" pos="0.12   -0.045 -0.095" rgba="1 1 1 1" class="collision"/>
                 <geom name="l_foot11" size="0.005" pos="0.15   -0.01  -0.095" rgba="1 1 1 1" class="collision"/>
                 -->
+                <!-- cylinders not yet supported in mjx
                 <geom type="cylinder" name="l_foot00" size="0.042 0.005" pos="-0.08 0.0 -0.095" rgba="1 0 0 1" class="collision"/>
                 <geom type="cylinder" name="l_foot01" size="0.050 0.005" pos="0.1 0.002 -0.095" rgba="1 0 0 1" class="collision"/>
                 <geom type="box" name="l_foot02" size="0.1 0.039 0.005" pos="0.01 0 -0.095" rgba="1 0 0 1" class="collision"/>
+                -->
+                <geom type="box" name="l_foot00" size="0.14 0.039 0.005" pos="0.023 0 -0.095" rgba="1 0 0 1" class="collision"/>
 
                 <site name="l_foot" pos="0 0 -0.095" />
               </body>
@@ -142,9 +145,12 @@
                 <geom name="r_foot10" size="0.005" pos="0.12   -0.038 -0.095" rgba="1 1 1 1" class="collision"/>
                 <geom name="r_foot11" size="0.005" pos="0.15    0.01  -0.095" rgba="1 1 1 1" class="collision"/>
                 -->
+                <!-- cylinders not yet supported in mjx
                 <geom type="cylinder" name="r_foot00" size="0.042 0.005" pos="-0.08 0.0 -0.095" rgba="1 0 0 1" class="collision"/>
                 <geom type="cylinder" name="r_foot01" size="0.050 0.005" pos="0.1 -0.002 -0.095" rgba="1 0 0 1" class="collision"/>
                 <geom type="box" name="r_foot02" size="0.1 0.039 0.005" pos="0.01 0 -0.095" rgba="1 0 0 1" class="collision"/>
+                -->
+                <geom type="box" name="r_foot00" size="0.14 0.039 0.005" pos="0.023 0 -0.095" rgba="1 0 0 1" class="collision"/>
 
                 <site name="r_foot" pos="0 0 -0.095" />
               </body>

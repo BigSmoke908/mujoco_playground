@@ -38,6 +38,8 @@ parser.add_argument('-w', '--wandb', action='store_true', help='Enable Weights &
 parser.add_argument('-c', '--config', nargs="+", type=parse_kv, help='Overwrites for default configuration of environment' )
 args = parser.parse_args()
 
+config_overrides = dict(args.config) if args.config else {}
+
 ckpt_path = epath.Path(__file__).parent / "checkpoints" / f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{args.run_name}"
 ckpt_path.mkdir(parents=True, exist_ok=True)
 
@@ -70,7 +72,7 @@ if args.wandb:
                    config={
                           "env": args.env,
                           "gpu": args.gpu,
-                          "run_name": args.run_name,} | dict(ppo_params) | dict(env_cfg))
+                          "run_name": args.run_name,} | dict(ppo_params) | dict(env_cfg) | config_overrides,)
 else:
   from mujoco_playground.experimental.utils.plotting import TrainingPlotter
   plotter = TrainingPlotter(max_timesteps=ppo_params.num_timesteps, figsize=(15, 10))
@@ -139,7 +141,7 @@ train_fn = functools.partial(
 )
 make_inference_fn, params, metrics = train_fn(
     environment=env,
-    eval_env=registry.load(env_name, config=env_cfg),
+    eval_env=registry.load(env_name, config=env_cfg, config_overrides=config_overrides),
     wrap_env_fn=wrapper.wrap_for_brax_training,
 )
 print(f"time to jit: {times[1] - times[0]}")

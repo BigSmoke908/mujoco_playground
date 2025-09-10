@@ -23,7 +23,7 @@ from mujoco_playground.experimental.x02_walking.convert_to_onnx import conv_to_o
 
 def parse_kv(s):
     key, value = s.split("=")
-    return key, value
+    return key, float(value)
 
 # Enable persistent compilation cache.
 jax.config.update("jax_compilation_cache_dir", "/tmp/jax_cache")

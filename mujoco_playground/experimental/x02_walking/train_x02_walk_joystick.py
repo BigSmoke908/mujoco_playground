@@ -46,6 +46,10 @@ import pickle
 from tqdm import tqdm
 from mujoco_playground.experimental.x02_walking.convert_to_onnx import conv_to_onnx
 
+def parse_kv(s):
+    key, value = s.split("=")
+    return key, value
+
 # Enable persistent compilation cache.
 jax.config.update("jax_compilation_cache_dir", "/tmp/jax_cache")
 jax.config.update("jax_persistent_cache_min_entry_size_bytes", -1)
@@ -56,6 +60,7 @@ parser.add_argument('run_name', type=str, help='Name of the run for saving param
 parser.add_argument('-g', '--gpu', type=str, default='0', help='GPU device to use')
 parser.add_argument('-e', '--env', type=str, default='X02JoystickFlatTerrain')
 parser.add_argument('-w', '--wandb', action='store_true', help='Enable Weights & Biases logging')
+parser.add_argument('-c', '--config', nargs="+", type=parse_kv, help='Overwrites for default configuration of environment' )
 args = parser.parse_args()
 
 ckpt_path = epath.Path(__file__).parent / "checkpoints" / f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{args.run_name}"

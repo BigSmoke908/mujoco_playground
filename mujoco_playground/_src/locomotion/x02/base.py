@@ -30,6 +30,7 @@ from mujoco_playground._src.locomotion.x02 import x02_constants as consts
 def get_assets() -> Dict[str, bytes]:
   assets = {}
   mjx_env.update_assets(assets, consts.ROOT_PATH / "xmls", "*.xml")
+  mjx_env.update_assets(assets, consts.ROOT_PATH / "xmls" / "assets")
   mjx_env.update_assets(assets, consts.ROOT_PATH / "xmls" / "meshes", "*.STL")
   return assets
 

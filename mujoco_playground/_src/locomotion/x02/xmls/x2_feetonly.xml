@@ -1,5 +1,5 @@
 <mujoco model="x2">
-  <compiler angle="radian" meshdir="./meshes/"/>
+  <compiler angle="radian"/>
   <default>
     <joint damping="0.1" armature="0.01" frictionloss="0.01" actuatorfrcrange="-60 60"/>
     <default class="humanoid">
@@ -16,29 +16,29 @@
     <flag eulerdamp="disable"/> <!-- this is not the reason for too much memory-->
   </option>
   <asset>
-    <mesh name="pelvis_link" file="pelvis_link.STL"/>
-    <mesh name="L_hip_yaw_link" file="L_hip_yaw_link.STL"/>
-    <mesh name="L_hip_roll_link" file="L_hip_roll_link.STL"/>
-    <mesh name="L_hip_pitch_link" file="L_hip_pitch_link.STL"/>
-    <mesh name="L_knee_pitch_link" file="L_knee_pitch_link.STL"/>
-    <mesh name="L_ankle_pitch_link" file="L_ankle_pitch_link.STL"/>
-    <mesh name="R_hip_yaw_link" file="R_hip_yaw_link.STL"/>
-    <mesh name="R_hip_roll_link" file="R_hip_roll_link.STL"/>
-    <mesh name="R_hip_pitch_link" file="R_hip_pitch_link.STL"/>
-    <mesh name="R_knee_pitch_link" file="R_knee_pitch_link.STL"/>
-    <mesh name="R_ankle_pitch_link" file="R_ankle_pitch_link.STL"/>
-    <mesh name="waist_yaw_link" file="waist_yaw_link.STL"/>
-    <mesh name="torso_link" file="torso_link.STL"/>
-    <mesh name="logo_link" file="logo_link.STL"/>
-    <mesh name="head_link" file="head_link.STL"/>
-    <mesh name="L_shoulder_pitch_link" file="L_shoulder_pitch_link.STL"/>
-    <mesh name="L_shoulder_roll_link" file="L_shoulder_roll_link.STL"/>
-    <mesh name="L_shoulder_yaw_link" file="L_shoulder_yaw_link.STL"/>
-    <mesh name="L_elbow_pitch_link" file="L_elbow_pitch_link.STL"/>
-    <mesh name="R_shoulder_pitch_link" file="R_shoulder_pitch_link.STL"/>
-    <mesh name="R_shoulder_roll_link" file="R_shoulder_roll_link.STL"/>
-    <mesh name="R_shoulder_yaw_link" file="R_shoulder_yaw_link.STL"/>
-    <mesh name="R_elbow_pitch_link" file="R_elbow_pitch_link.STL"/>
+    <mesh name="pelvis_link" file="meshes/pelvis_link.STL"/>
+    <mesh name="L_hip_yaw_link" file="meshes/L_hip_yaw_link.STL"/>
+    <mesh name="L_hip_roll_link" file="meshes/L_hip_roll_link.STL"/>
+    <mesh name="L_hip_pitch_link" file="meshes/L_hip_pitch_link.STL"/>
+    <mesh name="L_knee_pitch_link" file="meshes/L_knee_pitch_link.STL"/>
+    <mesh name="L_ankle_pitch_link" file="meshes/L_ankle_pitch_link.STL"/>
+    <mesh name="R_hip_yaw_link" file="meshes/R_hip_yaw_link.STL"/>
+    <mesh name="R_hip_roll_link" file="meshes/R_hip_roll_link.STL"/>
+    <mesh name="R_hip_pitch_link" file="meshes/R_hip_pitch_link.STL"/>
+    <mesh name="R_knee_pitch_link" file="meshes/R_knee_pitch_link.STL"/>
+    <mesh name="R_ankle_pitch_link" file="meshes/R_ankle_pitch_link.STL"/>
+    <mesh name="waist_yaw_link" file="meshes/waist_yaw_link.STL"/>
+    <mesh name="torso_link" file="meshes/torso_link.STL"/>
+    <mesh name="logo_link" file="meshes/logo_link.STL"/>
+    <mesh name="head_link" file="meshes/head_link.STL"/>
+    <mesh name="L_shoulder_pitch_link" file="meshes/L_shoulder_pitch_link.STL"/>
+    <mesh name="L_shoulder_roll_link" file="meshes/L_shoulder_roll_link.STL"/>
+    <mesh name="L_shoulder_yaw_link" file="meshes/L_shoulder_yaw_link.STL"/>
+    <mesh name="L_elbow_pitch_link" file="meshes/L_elbow_pitch_link.STL"/>
+    <mesh name="R_shoulder_pitch_link" file="meshes/R_shoulder_pitch_link.STL"/>
+    <mesh name="R_shoulder_roll_link" file="meshes/R_shoulder_roll_link.STL"/>
+    <mesh name="R_shoulder_yaw_link" file="meshes/R_shoulder_yaw_link.STL"/>
+    <mesh name="R_elbow_pitch_link" file="meshes/R_elbow_pitch_link.STL"/>
   </asset>
   <worldbody>
     <light name="spotlight" target="pelvis_link" pos="0 0 2" dir="0 0 -1." cutoff="30" mode="targetbodycom"/>

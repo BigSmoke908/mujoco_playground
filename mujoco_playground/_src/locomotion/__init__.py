@@ -99,6 +99,9 @@ _envs = {
     "X02JoystickFlatTerrain": functools.partial(
         x02_joystick.Joystick, task="flat_terrain"
     ),
+    "X02JoystickRoughTerrain": functools.partial(
+        x02_joystick.Joystick, task="rough_terrain"
+    ),
 }
 
 _cfgs = {
@@ -132,6 +135,7 @@ _cfgs = {
     "T1JoystickFlatTerrain": t1_joystick.default_config,
     "T1JoystickRoughTerrain": t1_joystick.default_config,    
     "X02JoystickFlatTerrain": x02_joystick.default_config,
+    "X02JoystickRoughTerrain": x02_joystick.default_config,
 }
 _randomizer = {
     "BerkeleyHumanoidJoystickFlatTerrain": (
@@ -156,6 +160,7 @@ _randomizer = {
     "T1JoystickFlatTerrain": t1_randomize.domain_randomize,
     "T1JoystickRoughTerrain": t1_randomize.domain_randomize,
     "X02JoystickFlatTerrain": x02_randomize.domain_randomize,
+    "X02JoystickRoughTerrain": x02_randomize.domain_randomize,
 }
 
 

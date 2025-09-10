@@ -22,15 +22,15 @@ ROOT_PATH = mjx_env.ROOT_PATH / "locomotion" / "x02"
 FEET_ONLY_FLAT_TERRAIN_XML = (
     ROOT_PATH / "xmls" / "scene.xml"
 )
-#FEET_ONLY_ROUGH_TERRAIN_XML = (
-#    ROOT_PATH / "xmls" / "scene_mjx_feetonly_rough_terrain.xml"
-#)
+FEET_ONLY_ROUGH_TERRAIN_XML = (
+   ROOT_PATH / "xmls" / "scene_rough_terrain.xml"
+)
 
 
 def task_to_xml(task_name: str) -> epath.Path:
   return {
       "flat_terrain": FEET_ONLY_FLAT_TERRAIN_XML,
-      #"rough_terrain": FEET_ONLY_ROUGH_TERRAIN_XML,
+      "rough_terrain": FEET_ONLY_ROUGH_TERRAIN_XML,
   }[task_name]
 
 

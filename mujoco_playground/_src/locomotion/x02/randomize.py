@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Domain randomization for the Berkeley Humanoid environment."""
+"""Domain randomization for the X02 environment."""
 
 import jax
 from mujoco import mjx

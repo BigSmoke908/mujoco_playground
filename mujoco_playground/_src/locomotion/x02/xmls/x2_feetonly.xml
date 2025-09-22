@@ -44,6 +44,8 @@
     <light name="spotlight" target="pelvis_link" pos="0 0 2" dir="0 0 -1." cutoff="30" mode="targetbodycom"/>
     <body name="pelvis_link" pos="0 0 0.91" childclass="humanoid">
       <joint name="pelvis_link" type="free" limited="false" actuatorfrclimited="false"/>
+      <camera name="front" pos="1.210 -0.435 0.32" xyaxes="0.342 0.940 0.000 -0.321 0.117 0.940" mode="trackcom"/>
+      <camera name="track" pos="1.35 -1.70 0.5" xyaxes="0.814 0.580 0.000 -0.140 0.196 0.971" mode="trackcom"/>
       <site name="imu"/>
       <inertial pos="-0.000780925 -1.61312e-05 0.320098" quat="0.999982 -6.6303e-05 0.00594371 0.000195653" mass="14.8692" diaginertia="0.548526 0.426111 0.226041"/>
       <geom type="mesh" rgba="1 1 1 1" mesh="pelvis_link" class="visual"/>

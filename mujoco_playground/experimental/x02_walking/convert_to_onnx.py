@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 
-def conv_to_onnx(checkpoint: str, output: str, env_name: str):
+def conv_to_onnx(checkpoint: str, output: str, env_name: str, config_ovverrides=None):
     import os
     os.environ["MUJOCO_GL"] = "egl"
     os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"
@@ -38,7 +38,7 @@ def conv_to_onnx(checkpoint: str, output: str, env_name: str):
     # env_cfg = locomotion.get_default_config(env_name)
     # env = locomotion.load(env_name, config=env_cfg)
     env_cfg = locomotion.get_default_config(env_name)
-    env = locomotion.load(env_name, config=env_cfg)
+    env = locomotion.load(env_name, config=env_cfg, config_overrides=config_ovverrides)
 
     
     obs_size = env.observation_size

@@ -36,7 +36,7 @@ def get_assets() -> Dict[str, bytes]:
 
 
 class X02Base(mjx_env.MjxEnv):
-  """Base class for Berkeley Humanoid environments."""
+  """Base class for X02 Humanoid environments."""
 
   def __init__(
       self,

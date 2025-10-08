@@ -74,6 +74,7 @@ def default_config() -> config_dict.ConfigDict:
               feet_phase=1.0,
               flat_foot=0.25,
               horizontal_foot_clearance=0.25,
+              foot_in_contact_reward=1.0,
               #feet contact force
               # Other rewards.
               stand_still=0.0,
@@ -86,7 +87,7 @@ def default_config() -> config_dict.ConfigDict:
               pose=-1.0,
           ),
           tracking_sigma=0.5,
-          max_foot_height=0.12,
+          max_foot_height=0.1,
           base_height_target=0.7, # does not do anything without base height reward scalar
           minimal_horizontal_foot_clearance=0.1, # meters
       ),
@@ -234,6 +235,9 @@ class Joystick(x02_base.X02Base):
     )
     push_interval_steps = jp.round(push_interval / self.dt).astype(jp.int32)
 
+    qpos_error_history = jp.zeros(self._config.history_len * 10)
+    qvel_history = jp.zeros(self._config.history_len * 10)
+
     info = {
         "rng": rng,
         "step": 0,
@@ -251,6 +255,9 @@ class Joystick(x02_base.X02Base):
         "push": jp.array([0.0, 0.0]),
         "push_step": 0,
         "push_interval_steps": push_interval_steps,
+        # History
+        "qpos_error_history": qpos_error_history,
+        "qvel_history": qvel_history,
     }
 
     metrics = {}
@@ -408,8 +415,21 @@ class Joystick(x02_base.X02Base):
     #    * self._config.noise_config.scales.linvel
     #)
 
+    # TODO noisy history
+    # Update history.
+    qvel_history = jp.roll(info["qvel_history"], 10).at[:10].set(data.qvel[6:]) 
+    qpos_error_history = (
+        jp.roll(info["qpos_error_history"], 10)
+        .at[:10]
+        .set(data.qpos[7:] - info["motor_targets"]) # 7: because 3 pos, 4 quat rotation, twist is only 6
+    )
+    info["qvel_history"] = qvel_history
+    info["qpos_error_history"] = qpos_error_history
+
     state = jp.hstack([
         #noisy_linvel,  # 3
+        qvel_history, # 10*history_len
+        qpos_error_history, # 10*history_len
         noisy_gyro,  # 3
         noisy_gravity,  # 3
         info["command"],  # 3

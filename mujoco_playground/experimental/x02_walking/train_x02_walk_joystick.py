@@ -8,7 +8,6 @@ import datetime
 from datetime import datetime
 import functools
 import os
-import mujoco
 import mediapy as media
 from brax.training.agents.ppo import networks as ppo_networks
 from brax.training.agents.ppo import train as ppo
@@ -25,10 +24,23 @@ from tqdm import tqdm
 from mujoco_playground.experimental.x02_walking.convert_to_onnx import conv_to_onnx
 from mujoco_playground._src.gait import draw_joystick_command
 
+# Tell XLA to use Triton GEMM, this improves steps/sec by ~30% on some GPUs
+xla_flags = os.environ.get('XLA_FLAGS', '')
+xla_flags += ' --xla_gpu_triton_gemm_any=True'
+os.environ['XLA_FLAGS'] = xla_flags
+
+from mujoco_playground import wrapper
+from mujoco_playground import registry
+from mujoco_playground.config import locomotion_params
+import mujoco
+
 
 def parse_kv(s):
-    key, value = s.split("=")
-    return key, float(value)
+    key, value = s.split('=')
+    if '.' in value:
+      return key, float(value)
+    else:
+      return key, int(value)
 
 # Enable persistent compilation cache.
 jax.config.update("jax_compilation_cache_dir", "/tmp/jax_cache")
@@ -36,29 +48,21 @@ jax.config.update("jax_persistent_cache_min_entry_size_bytes", -1)
 jax.config.update("jax_persistent_cache_min_compile_time_secs", 0)
 jax.config.update("jax_persistent_cache_enable_xla_caches", "xla_gpu_per_fusion_autotune_cache_dir")
 parser = ArgumentParser(description="Train a walking agent with joystick control.")
-parser.add_argument('run_name', type=str, help='Name of the run for saving parameters')
+parser.add_argument('-n', '--run-name', type=str, required=True, help='Name of the run for saving parameters')
 parser.add_argument('-g', '--gpu', type=str, default='0', help='GPU device to use')
 parser.add_argument('-e', '--env', type=str, default='X02JoystickFlatTerrain')
 parser.add_argument('-w', '--wandb', action='store_true', help='Enable Weights & Biases logging')
 parser.add_argument('-c', '--config', nargs="+", type=parse_kv, help='Overwrites for default configuration of environment' )
+parser.add_argument('-C', "--rl-config", nargs="+", type=parse_kv, help='Overwrites for default configuration of RL algorithm' )
 args = parser.parse_args()
 
+os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
+
 config_overrides = dict(args.config) if args.config else {}
+rl_config_overrides = dict(args.rl_config) if args.rl_config else {}
 
 ckpt_path = epath.Path(__file__).parent / "checkpoints" / f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{args.run_name}"
 ckpt_path.mkdir(parents=True, exist_ok=True)
-
-
-# Tell XLA to use Triton GEMM, this improves steps/sec by ~30% on some GPUs
-xla_flags = os.environ.get('XLA_FLAGS', '')
-xla_flags += ' --xla_gpu_triton_gemm_any=True'
-os.environ['XLA_FLAGS'] = xla_flags
-os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
-
-
-from mujoco_playground import wrapper
-from mujoco_playground import registry
-from mujoco_playground.config import locomotion_params
 
 np.set_printoptions(precision=3, suppress=True, linewidth=100)
 
@@ -66,6 +70,7 @@ env_name = args.env
 env = registry.load(env_name, config_overrides=config_overrides)
 env_cfg = registry.get_default_config(env_name)
 ppo_params = locomotion_params.brax_ppo_config(env_name)
+ppo_params.update(rl_config_overrides)
 
 
 if args.wandb:
@@ -102,6 +107,12 @@ def progress(num_steps, metrics):
   times.append(datetime.now())
   if args.wandb:
     metrics_name_replaced = {k.replace("eval/episode_reward/", "rewards/"): v for k, v in metrics.items()}
+    for k, v in metrics.items():
+      if "rewards" in k and "_std" in k:
+        new_k = k.replace("rewards", "rewards_std")
+        print(f'replace {k} with {new_k}')
+        del(metrics_name_replaced[k])
+        metrics_name_replaced[new_k] = v
     wandb.log(metrics_name_replaced, step=num_steps)
   else:
     plotter.update(num_steps, metrics)
@@ -154,7 +165,7 @@ print(f"time to train: {times[-1] - times[1]}")
 
 print("Rendering Video")
 
-eval_env = registry.load(env_name)
+eval_env = registry.load(env_name, config_overrides=config_overrides)
 jit_reset = jax.jit(eval_env.reset)
 jit_step = jax.jit(eval_env.step)
 jit_inference_fn = jax.jit(make_inference_fn(params, deterministic=True))
@@ -202,7 +213,7 @@ for j in range(commands.shape[0]):
         )
     )
 
-render_every = 1
+render_every = 2
 fps = 1.0 / eval_env.dt / render_every
 print(f"fps: {fps}")
 traj = rollout[::render_every]
@@ -228,4 +239,4 @@ if args.wandb:
     wandb.log({"video": wandb.Video(str(ckpt_path / f"{args.run_name}_eval.mp4"), fps=fps, format="mp4")})
 
 save_params(ckpt_path, params)
-conv_to_onnx(ckpt_path / "params.pkl", f"{args.run_name}.onnx", env_name)
+# conv_to_onnx(ckpt_path / "params.pkl", f"{args.run_name}.onnx", env_name)

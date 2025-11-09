@@ -385,7 +385,7 @@ def main(argv):
         writer.add_scalar(key, value, num_steps)
       writer.flush()
     if _RUN_EVALS.value:
-      print(f"{num_steps}: reward={metrics['eval/episode_reward']:.3f}")
+      print(f"Progress={((num_steps/ppo_params.num_timesteps)*100):.1f}%, reward={metrics['eval/episode_reward']:.3f}, {num_steps=}")
     if _LOG_TRAINING_METRICS.value:
       if "episode/sum_reward" in metrics:
         print(

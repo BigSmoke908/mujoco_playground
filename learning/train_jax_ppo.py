@@ -429,14 +429,23 @@ def main(argv):
       rscope_handle.dump_rollout(params)
 
   # Train or load the model
-  make_inference_fn, params, _ = train_fn(  # pylint: disable=no-value-for-parameter
-      environment=env,
-      progress_fn=progress,
-      policy_params_fn=policy_params_fn,
-      eval_env=None if _VISION.value else eval_env,
-  )
+  make_inference_fn, params, _ = train_fn(
+    environment=train_env,
+    progress_fn=progress,
+    policy_params_fn=policy_params_fn,
+    eval_env=None if _VISION.value else eval_env,
+)
 
   print("Done training.")
+
+  # -------- Save policy.pkl --------
+  import pickle
+  policy_params = params["policy"]
+  policy_save_path = (logdir / "policy.pkl").resolve()
+  with open(policy_save_path, "wb") as f:
+      pickle.dump(policy_params, f)
+  print(f"Saved policy as: {policy_save_path}")
+
   if len(times) > 1:
     print(f"Time to JIT compile: {times[1] - times[0]}")
     print(f"Time to train: {times[-1] - times[1]}")

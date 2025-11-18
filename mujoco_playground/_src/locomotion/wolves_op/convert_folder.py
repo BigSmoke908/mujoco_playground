@@ -6,7 +6,7 @@ import os
 # ==========================================
 # HIER DEINEN PFAD EINTRAGEN
 # Beispiel: "logs/WolvesOPJoystickFlatTerrain-2025.../checkpoints/1000000"
-checkpoint_path = "/home/ubuntu/albaraa/mujoco_playground/logs/WolvesOPJoystickFlatTerrain-20251104-075648/checkpoints/000151388160" 
+checkpoint_path = "logs/WolvesOPJoystickFlatTerrain-20251104-075648/checkpoints/000151388160" 
 # ==========================================
 
 def main():

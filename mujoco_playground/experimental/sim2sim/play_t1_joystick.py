@@ -22,7 +22,7 @@ import onnxruntime as rt
 
 from mujoco_playground._src.locomotion.t1 import t1_constants
 from mujoco_playground._src.locomotion.t1.base import get_assets
-from mujoco_playground.experimental.sim2sim.gamepad_reader import Gamepad
+from mujoco_playground.experimental.sim2sim.keyboard_gamepad import KeyboardGamepad
 
 _HERE = epath.Path(__file__).parent
 _ONNX_DIR = _HERE / "onnx"
@@ -59,11 +59,10 @@ class OnnxController:
     self._gait_freq = 1.5
     self._phase_dt = 2 * np.pi * self._gait_freq * ctrl_dt
 
-    self._joystick = Gamepad(
+    self._joystick = KeyboardGamepad(
         vel_scale_x=vel_scale_x,
         vel_scale_y=vel_scale_y,
         vel_scale_rot=vel_scale_rot,
-        deadzone=0.03,
     )
 
   def get_obs(self, model, data) -> np.ndarray:

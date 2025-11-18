@@ -2,7 +2,7 @@ from argparse import ArgumentParser
 
 def conv_to_onnx(checkpoint: str, output: str, env_name: str, config_ovverrides=None):
     import os
-    os.environ["MUJOCO_GL"] = "egl"
+    #os.environ["MUJOCO_GL"] = "egl"
     os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"
 
     
@@ -50,10 +50,15 @@ def conv_to_onnx(checkpoint: str, output: str, env_name: str, config_ovverrides=
 
     with open(checkpoint, 'rb') as f:
         params = pickle.load(f)
-    print(params.keys())
-
     
-    params = (params["normalizer_params"], params["policy_params"])
+    # NEU: Wir prüfen, ob es ein Dictionary oder eine Liste ist
+    if isinstance(params, dict):
+        print("Keys found:", params.keys())
+        params = (params["normalizer_params"], params["policy_params"])
+    else:
+        print(f"Params loaded as {type(params)}, assuming direct (normalizer, policy) tuple.")
+        # Wenn es schon eine Liste/Tupel ist, müssen wir nichts tun.
+        # params ist hier bereits (normalizer_params, policy_params)
 
     
     make_inference_fn = ppo_networks.make_inference_fn(ppo_network)
@@ -133,8 +138,30 @@ def conv_to_onnx(checkpoint: str, output: str, env_name: str, config_ovverrides=
         return policy_network
 
     
-    mean = params[0].mean["state"]
-    std = params[0].std["state"]
+    # --- START FIX ---
+    # Wir prüfen: Ist es ein Objekt oder ein Dictionary?
+    if hasattr(params[0], "mean"):
+        # Es ist das erwartete Objekt (alter Weg)
+        mean = params[0].mean["state"]
+        # Manche Brax-Versionen haben .std, manche nur .variance
+        if hasattr(params[0], "std"):
+            std = params[0].std["state"]
+        else:
+            std = jp.sqrt(params[0].variance["state"] + 1e-8)
+    else:
+        # Es ist ein Dictionary (unser Weg)
+        mean = params[0]["mean"]["state"]
+        
+        # Prüfen, ob 'std' direkt da ist, sonst aus 'variance' berechnen
+        if "std" in params[0]:
+            std = params[0]["std"]["state"]
+        elif "variance" in params[0]:
+            std = jp.sqrt(params[0]["variance"]["state"] + 1e-8)
+        elif "var" in params[0]:  # Manchmal heißt es auch nur 'var'
+            std = jp.sqrt(params[0]["var"]["state"] + 1e-8)
+        else:
+            raise ValueError("Konnte weder 'std' noch 'variance' im Checkpoint finden!")
+    # --- END FIX ---
 
     # Convert mean/std jax arrays to tf tensors.
     mean_std = (tf.convert_to_tensor(mean), tf.convert_to_tensor(std))

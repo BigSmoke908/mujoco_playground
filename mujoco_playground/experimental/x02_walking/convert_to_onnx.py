@@ -1,30 +1,25 @@
 from argparse import ArgumentParser
+import pathlib
+import orbax.checkpoint as ocp
+import pickle
+
 
 def conv_to_onnx(checkpoint: str, output: str, env_name: str, config_ovverrides=None):
     import os
-    #os.environ["MUJOCO_GL"] = "egl"
+    os.environ["MUJOCO_GL"] = "egl"
     os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"
 
     
     from brax.training.agents.ppo import networks as ppo_networks
-    from mujoco_playground.config import locomotion_params, manipulation_params
-    from mujoco_playground import locomotion, manipulation
+    from mujoco_playground.config import locomotion_params
+    from mujoco_playground import locomotion
     import functools
-    import pickle
-    import jax.numpy as jp
-    import jax
     import tf2onnx
     import tensorflow as tf
     from tensorflow.keras import layers
-    import onnxruntime as rt
     from brax.training.acme import running_statistics
     # ppo_params = locomotion_params.brax_ppo_config(env_name)
     ppo_params = locomotion_params.brax_ppo_config(env_name)
-
-    
-    def identity_observation_preprocessor(observation, preprocessor_params):
-        del preprocessor_params
-        return observation
 
     network_factory=functools.partial(
     ppo_networks.make_ppo_networks,
@@ -34,37 +29,23 @@ def conv_to_onnx(checkpoint: str, output: str, env_name: str, config_ovverrides=
     preprocess_observations_fn=running_statistics.normalize,
     )
 
-    
-    # env_cfg = locomotion.get_default_config(env_name)
-    # env = locomotion.load(env_name, config=env_cfg)
     env_cfg = locomotion.get_default_config(env_name)
-    env = locomotion.load(env_name, config=env_cfg, config_overrides=config_ovverrides)
-
+    env = locomotion.load(env_name, config=env_cfg)
     
     obs_size = env.observation_size
     act_size = env.action_size
     print(obs_size, act_size)
-
     
     ppo_network = network_factory(obs_size, act_size)
 
-    with open(checkpoint, 'rb') as f:
-        params = pickle.load(f)
-    
-    # NEU: Wir prüfen, ob es ein Dictionary oder eine Liste ist
-    if isinstance(params, dict):
-        print("Keys found:", params.keys())
+    params = load_checkpoint(checkpoint)
+    if params is None:
+        raise Exception(f"Something went wrong while loading the checkpoint, as nothing was read!\nCheckpoint path:\n{checkpoint}")
+
+    if not isinstance(params, list):
+        # TODO is this needed, if we can always just export directly from the logs folder anyways
         params = (params["normalizer_params"], params["policy_params"])
-    else:
-        print(f"Params loaded as {type(params)}, assuming direct (normalizer, policy) tuple.")
-        # Wenn es schon eine Liste/Tupel ist, müssen wir nichts tun.
-        # params ist hier bereits (normalizer_params, policy_params)
 
-    
-    make_inference_fn = ppo_networks.make_inference_fn(ppo_network)
-    inference_fn = make_inference_fn(params, deterministic=True)
-
-    
     class MLP(tf.keras.Model):
         def __init__(
             self,
@@ -138,30 +119,8 @@ def conv_to_onnx(checkpoint: str, output: str, env_name: str, config_ovverrides=
         return policy_network
 
     
-    # --- START FIX ---
-    # Wir prüfen: Ist es ein Objekt oder ein Dictionary?
-    if hasattr(params[0], "mean"):
-        # Es ist das erwartete Objekt (alter Weg)
-        mean = params[0].mean["state"]
-        # Manche Brax-Versionen haben .std, manche nur .variance
-        if hasattr(params[0], "std"):
-            std = params[0].std["state"]
-        else:
-            std = jp.sqrt(params[0].variance["state"] + 1e-8)
-    else:
-        # Es ist ein Dictionary (unser Weg)
-        mean = params[0]["mean"]["state"]
-        
-        # Prüfen, ob 'std' direkt da ist, sonst aus 'variance' berechnen
-        if "std" in params[0]:
-            std = params[0]["std"]["state"]
-        elif "variance" in params[0]:
-            std = jp.sqrt(params[0]["variance"]["state"] + 1e-8)
-        elif "var" in params[0]:  # Manchmal heißt es auch nur 'var'
-            std = jp.sqrt(params[0]["var"]["state"] + 1e-8)
-        else:
-            raise ValueError("Konnte weder 'std' noch 'variance' im Checkpoint finden!")
-    # --- END FIX ---
+    mean = params[0].mean["state"]
+    std = params[0].std["state"]
 
     # Convert mean/std jax arrays to tf tensors.
     mean_std = (tf.convert_to_tensor(mean), tf.convert_to_tensor(std))
@@ -243,6 +202,37 @@ def conv_to_onnx(checkpoint: str, output: str, env_name: str, config_ovverrides=
 
     print(f"ONNX model saved to: {output}")
 
+
+def load_checkpoint(checkpoint: str):
+
+    path = pathlib.Path(checkpoint).resolve()
+
+    if not path.exists():
+        print(f"The given path does not exist on your system:\n{path}")
+        return
+    
+    
+    if path.is_dir():
+        # -> its a checkpoint directory that we need to load using orbax-checkpointer
+        print("Attempting to load checkpoint from full directory")
+        checkpointer = ocp.PyTreeCheckpointer()
+
+        try:
+            params = checkpointer.restore(path)
+            return params
+        except Exception as e:
+            print(f"Could not load from the using orbax!\nFull Error:\n{e}\nPath:\n{path}")
+            return
+    else:
+        # TODO -> needed for us? (we could just always use the log directory anyways)
+        print("Attempting to load checkpoint from pickle file")
+        
+        with open(checkpoint, 'rb') as f:
+            params = pickle.load(f)
+            return params
+        return
+
+
 if __name__ == "__main__":
     argparser = ArgumentParser()
     argparser.add_argument("-c", "--checkpoint", type=str,required=True)
@@ -250,6 +240,5 @@ if __name__ == "__main__":
     argparser.add_argument("-e", "--env-name", type=str, default="X02JoystickFlatTerrain")
     args = argparser.parse_args()
     conv_to_onnx(args.checkpoint, args.output, args.env_name)
-
 
 

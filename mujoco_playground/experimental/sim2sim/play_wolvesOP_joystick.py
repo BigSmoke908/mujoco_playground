@@ -22,7 +22,7 @@ import onnxruntime as rt
 
 from mujoco_playground._src.locomotion.wolves_op import wolvesop_constants
 from mujoco_playground._src.locomotion.wolves_op.base import get_assets
-from mujoco_playground.experimental.sim2sim.keyboard_gamepad import KeyboardGamepad
+# from mujoco_playground.experimental.sim2sim.keyboard_gamepad import KeyboardGamepad
 
 _HERE = epath.Path(__file__).parent
 _ONNX_DIR = _HERE / "onnx"
@@ -58,11 +58,7 @@ class OnnxController:
     self._gait_freq = 1.5
     self._phase_dt = 2 * np.pi * self._gait_freq * ctrl_dt
 
-    self._joystick = KeyboardGamepad(
-        vel_scale_x=vel_scale_x,
-        vel_scale_y=vel_scale_y,
-        vel_scale_rot=vel_scale_rot,
-    )
+    
 
   def get_obs(self, model, data) -> np.ndarray:
     linvel = data.sensor("local_linvel").data
@@ -131,4 +127,19 @@ def load_callback(model=None, data=None):
 
 
 if __name__ == "__main__":
-  viewer.launch(loader=load_callback)
+  # viewer.launch(loader=load_callback)
+
+  import json
+  from pprint import pprint
+
+  m, d= load_callback()
+
+  s = 'imu'
+  # print(d.actuator(s))
+  # print(d.sensordata)
+
+  import pickle
+  plc = pickle.loads(open('policy.pkl', 'rb').read())
+
+  pprint(plc)
+  # open('d2.json', '+w').write(json.dumps(dir(d)))

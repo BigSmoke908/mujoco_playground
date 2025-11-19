@@ -9,25 +9,13 @@ def conv_to_onnx(checkpoint: str, output: str, env_name: str, config_ovverrides=
     os.environ["MUJOCO_GL"] = "egl"
     os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"
 
-    
-    from brax.training.agents.ppo import networks as ppo_networks
     from mujoco_playground.config import locomotion_params
     from mujoco_playground import locomotion
-    import functools
     import tf2onnx
     import tensorflow as tf
     from tensorflow.keras import layers
-    from brax.training.acme import running_statistics
     # ppo_params = locomotion_params.brax_ppo_config(env_name)
     ppo_params = locomotion_params.brax_ppo_config(env_name)
-
-    network_factory=functools.partial(
-    ppo_networks.make_ppo_networks,
-    **ppo_params.network_factory,
-    # We need to explicitly call the normalization function here since only the brax
-    # PPO train.py script creates it if normalize_observations is True.
-    preprocess_observations_fn=running_statistics.normalize,
-    )
 
     env_cfg = locomotion.get_default_config(env_name)
     env = locomotion.load(env_name, config=env_cfg)
@@ -35,16 +23,10 @@ def conv_to_onnx(checkpoint: str, output: str, env_name: str, config_ovverrides=
     obs_size = env.observation_size
     act_size = env.action_size
     print(obs_size, act_size)
-    
-    ppo_network = network_factory(obs_size, act_size)
 
     params = load_checkpoint(checkpoint)
     if params is None:
         raise Exception(f"Something went wrong while loading the checkpoint, as nothing was read!\nCheckpoint path:\n{checkpoint}")
-
-    if not isinstance(params, list):
-        # TODO is this needed, if we can always just export directly from the logs folder anyways
-        params = (params["normalizer_params"], params["policy_params"])
 
     class MLP(tf.keras.Model):
         def __init__(
@@ -118,9 +100,8 @@ def conv_to_onnx(checkpoint: str, output: str, env_name: str, config_ovverrides=
         )
         return policy_network
 
-    
-    mean = params[0].mean["state"]
-    std = params[0].std["state"]
+    mean = params[0]["mean"]["state"]
+    std = params[0]["std"]["state"]
 
     # Convert mean/std jax arrays to tf tensors.
     mean_std = (tf.convert_to_tensor(mean), tf.convert_to_tensor(std))
@@ -221,7 +202,7 @@ def load_checkpoint(checkpoint: str):
             params = checkpointer.restore(path)
             return params
         except Exception as e:
-            print(f"Could not load from the using orbax!\nFull Error:\n{e}\nPath:\n{path}")
+            print(f"Could not load from path the using orbax!\nFull Error:\n{e}\nPath:\n{path}")
             return
     else:
         # TODO -> needed for us? (we could just always use the log directory anyways)
@@ -236,9 +217,10 @@ def load_checkpoint(checkpoint: str):
 if __name__ == "__main__":
     argparser = ArgumentParser()
     argparser.add_argument("-c", "--checkpoint", type=str,required=True)
-    argparser.add_argument("-o", "--output", type=str, default="x02_policy.onnx")
-    argparser.add_argument("-e", "--env-name", type=str, default="X02JoystickFlatTerrain")
+    argparser.add_argument("-o", "--output", type=str, default="wolvesOP_policy.onnx")
+    argparser.add_argument("-e", "--env-name", type=str, default="WolvesOPJoystickFlatTerrain")
     args = argparser.parse_args()
     conv_to_onnx(args.checkpoint, args.output, args.env_name)
+    # load_checkpoint(args.checkpoint)
 
 

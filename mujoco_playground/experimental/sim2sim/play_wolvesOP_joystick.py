@@ -157,8 +157,8 @@ sensor_addr = []
 if __name__ == "__main__":
   viewer.launch(loader=load_callback)
 
-  import pickle
+  import json
 
-  open('act.pkl', 'wb').write(pickle.dumps(actions))
-  open('obs.pkl', 'wb').write(pickle.dumps(observations))
-  open('sens.pkl', 'wb').write(pickle.dumps(sensor_addr))
+  open('act.json', 'w+').write(json.dumps([[float(x) for x in l] for l in actions]))
+  open('obs.json', 'w+').write(json.dumps([[float(x) for x in l] for l in observations]))
+  open('joint_names.json', 'w+').write(json.dumps(sensor_addr))

@@ -86,8 +86,6 @@ class OnnxController:
     return obs.astype(np.float32)
 
   def get_control(self, model: mujoco.MjModel, data: mujoco.MjData) -> None:
-    global actions, observations, sensor_addr
-
     self._counter += 1
     if self._counter % self._n_substeps == 0:
       obs = self.get_obs(model, data)
@@ -97,12 +95,6 @@ class OnnxController:
       data.ctrl[:] = onnx_pred * self._action_scale + self._default_angles
       phase_tp1 = self._phase + self._phase_dt
       self._phase = np.fmod(phase_tp1 + np.pi, 2 * np.pi) - np.pi
-
-      actions.append(onnx_pred)
-      observations.append(obs)
-      
-      if not sensor_addr:
-        sensor_addr = get_actuated_joint_names(model)
 
 
 def load_callback(model=None, data=None):
@@ -138,27 +130,5 @@ def load_callback(model=None, data=None):
   return model, data
 
 
-def get_actuated_joint_names(model) -> list[str]:
-  # TODO should be put into the training later!
-
-  joint_names = []
-  for actuator in range(model.nu):
-    joint_id = model.actuator_trnid[actuator][0]
-    name = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_JOINT, joint_id)
-    joint_names.append(name)
-  return joint_names
-
-
-actions = []
-observations = []
-sensor_addr = []
-
-
 if __name__ == "__main__":
   viewer.launch(loader=load_callback)
-
-  import pickle
-
-  open('act.pkl', 'wb').write(pickle.dumps(actions))
-  open('obs.pkl', 'wb').write(pickle.dumps(observations))
-  open('sens.pkl', 'wb').write(pickle.dumps(sensor_addr))

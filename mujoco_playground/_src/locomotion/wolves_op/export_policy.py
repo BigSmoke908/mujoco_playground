@@ -1,225 +1,193 @@
-from argparse import ArgumentParser
-import pathlib
-import orbax.checkpoint as ocp
+# Copyright 2025 Ostfalia Team
+# Custom Export Script: Orbax/Pickle to ONNX for WolvesOP
+# Compatible with JAX, Orbax, and NumPy 2.0
+
+import os
+import argparse
 import pickle
+import jax.numpy as jp
+import orbax.checkpoint as ocp
+import tf2onnx
+import tensorflow as tf
+import numpy as np
+from tensorflow.keras import layers
+from mujoco_playground import locomotion
+from mujoco_playground.config import locomotion_params
 
+# --- FIX FÜR NUMPY 2.0 ---
+# tf2onnx nutzt intern 'np.cast', was in NumPy 2.0 entfernt wurde.
+# Wir patchen es hier temporär, damit der Exporter nicht abstürzt.
+if not hasattr(np, "cast"):
+    class CastMap:
+        def __getitem__(self, type_):
+            return lambda x: np.asarray(x, dtype=type_)
+    np.cast = CastMap()
+    print("Info: NumPy 2.0 Compatibility Patch applied.")
+# -------------------------
 
-def conv_to_onnx(checkpoint: str, output: str, env_name: str):
-    import os
-    os.environ["MUJOCO_GL"] = "egl"
-    os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"
+# Fix für Mac M4 / Metal
+os.environ["MUJOCO_GL"] = "glfw"
+os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"
 
-    from mujoco_playground.config import locomotion_params
-    from mujoco_playground import locomotion
-    import tf2onnx
-    import tensorflow as tf
-    from tensorflow.keras import layers
-    # ppo_params = locomotion_params.brax_ppo_config(env_name)
-    ppo_params = locomotion_params.brax_ppo_config(env_name)
+def load_checkpoint(path):
+    """Lädt den Checkpoint intelligent (egal ob Datei oder Orbax-Ordner)."""
+    path = os.path.abspath(path)
+    if os.path.isdir(path):
+        print(f"Detected Orbax checkpoint folder: {path}")
+        checkpointer = ocp.PyTreeCheckpointer()
+        return checkpointer.restore(path)
+    else:
+        print(f"Detected legacy Pickle file: {path}")
+        with open(path, 'rb') as f:
+            return pickle.load(f)
 
-    env_cfg = locomotion.get_default_config(env_name)
-    env = locomotion.load(env_name, config=env_cfg)
+def get_params_robust(params):
+    """Extrahiert Mean, Std und Policy-Weights aus beliebigen Strukturen."""
     
-    obs_size = env.observation_size
-    act_size = env.action_size
-    print(obs_size, act_size)
+    # 1. Top-Level Struktur entpacken
+    if isinstance(params, dict) and "normalizer_params" in params:
+        norm_params = params["normalizer_params"]
+        pol_params = params["policy_params"]
+    elif isinstance(params, (list, tuple)):
+        norm_params = params[0]
+        pol_params = params[1]
+    else:
+        norm_params = params
+        pol_params = params
 
-    params = load_checkpoint(checkpoint)
-    if params is None:
-        raise Exception(f"Something went wrong while loading the checkpoint, as nothing was read!\nCheckpoint path:\n{checkpoint}")
-
-    class MLP(tf.keras.Model):
-        def __init__(
-            self,
-            layer_sizes,
-            activation=tf.nn.relu,
-            kernel_init="lecun_uniform",
-            activate_final=False,
-            bias=True,
-            layer_norm=False,
-            mean_std=None,
-        ):
-            super().__init__()
-
-            self.layer_sizes = layer_sizes
-            self.activation = activation
-            self.kernel_init = kernel_init
-            self.activate_final = activate_final
-            self.bias = bias
-            self.layer_norm = layer_norm
-
-            if mean_std is not None:
-                self.mean = tf.Variable(mean_std[0], trainable=False, dtype=tf.float32)
-                self.std = tf.Variable(mean_std[1], trainable=False, dtype=tf.float32)
+    # 2. Hilfsfunktion: Wert suchen
+    def find_val(container, candidate_keys):
+        for key in candidate_keys:
+            if isinstance(container, dict):
+                if key in container: return container[key]
             else:
-                self.mean = None
-                self.std = None
+                if hasattr(container, key): return getattr(container, key)
+        
+        if isinstance(container, dict) and "state" in container:
+             return find_val(container["state"], candidate_keys)
+        return None
 
-            self.mlp_block = tf.keras.Sequential(name="MLP_0")
-            for i, size in enumerate(self.layer_sizes):
-                dense_layer = layers.Dense(
-                    size,
-                    activation=self.activation,
-                    kernel_initializer=self.kernel_init,
-                    name=f"hidden_{i}",
-                    use_bias=self.bias,
-                )
-                self.mlp_block.add(dense_layer)
-                if self.layer_norm:
-                    self.mlp_block.add(layers.LayerNormalization(name=f"layer_norm_{i}"))
-            if not self.activate_final and self.mlp_block.layers:
-                if hasattr(self.mlp_block.layers[-1], 'activation') and self.mlp_block.layers[-1].activation is not None:
-                    self.mlp_block.layers[-1].activation = None
+    # Mean finden
+    mean = find_val(norm_params, ["mean"])
+    if mean is None:
+        debug_keys = norm_params.keys() if isinstance(norm_params, dict) else dir(norm_params)
+        raise ValueError(f"Konnte 'mean' nicht finden. Verfügbar: {debug_keys}")
 
-            self.submodules = [self.mlp_block]
+    # Std finden
+    std = find_val(norm_params, ["std"])
+    if std is None:
+        var = find_val(norm_params, ["variance", "var", "summed_variance"])
+        if var is not None:
+            print("Info: 'std' nicht gefunden, berechne aus 'variance'.")
+            if isinstance(var, dict):
+                std = {k: jp.sqrt(v + 1e-8) for k, v in var.items()}
+            else:
+                std = jp.sqrt(var + 1e-8)
+        else:
+            debug_keys = norm_params.keys() if isinstance(norm_params, dict) else dir(norm_params)
+            raise ValueError(f"Konnte weder 'std' noch 'variance' finden. Verfügbar: {debug_keys}")
+    
+    return mean, std, pol_params
+
+def make_policy_network(param_size, mean_std, hidden_layer_sizes, activation=tf.nn.swish):
+    """Erstellt das Tensorflow-Modell."""
+    class MLP(tf.keras.Model):
+        def __init__(self):
+            super().__init__()
+            self.mean = tf.Variable(mean_std[0], trainable=False, dtype=tf.float32)
+            self.std = tf.Variable(mean_std[1], trainable=False, dtype=tf.float32)
+            self.mlp = tf.keras.Sequential()
+            for size in hidden_layer_sizes:
+                self.mlp.add(layers.Dense(size, activation=activation, kernel_initializer="lecun_uniform"))
+            self.mlp.add(layers.Dense(param_size, kernel_initializer="lecun_uniform"))
 
         def call(self, inputs):
-            if isinstance(inputs, list):
-                inputs = inputs[0]
-            if self.mean is not None and self.std is not None:
-                print(self.mean.shape, self.std.shape)
-                inputs = (inputs - self.mean) / self.std
-            logits = self.mlp_block(inputs)
+            x = (inputs - self.mean) / self.std
+            logits = self.mlp(x)
             loc, _ = tf.split(logits, 2, axis=-1)
             return tf.tanh(loc)
+            
+    return MLP()
 
-    def make_policy_network(
-        param_size,
-        mean_std,
-        hidden_layer_sizes=[256, 256],
-        activation=tf.nn.relu,
-        kernel_init="lecun_uniform",
-        layer_norm=False,
-    ):
-        policy_network = MLP(
-            layer_sizes=list(hidden_layer_sizes) + [param_size],
-            activation=activation,
-            kernel_init=kernel_init,
-            layer_norm=layer_norm,
-            mean_std=mean_std,
-        )
-        return policy_network
-
-    mean = params[0]["mean"]["state"]
-    std = params[0]["std"]["state"]
-
-    # Convert mean/std jax arrays to tf tensors.
-    mean_std = (tf.convert_to_tensor(mean), tf.convert_to_tensor(std))
-
-    tf_policy_network = make_policy_network(
-        param_size=act_size * 2,
-        mean_std=mean_std,
-        hidden_layer_sizes=ppo_params.network_factory.policy_hidden_layer_sizes,
-        activation=tf.nn.swish,
-    )
-
+def main(args):
+    print(f"--- Starting Export for {args.env_name} ---")
     
-    example_input = tf.zeros((1, obs_size["state"][0]))
-    example_output = tf_policy_network(example_input)
-    print(example_output.shape)
-
+    # Config laden
+    env_cfg = locomotion.get_default_config(args.env_name)
+    env = locomotion.load(args.env_name, config=env_cfg)
+    ppo_params = locomotion_params.brax_ppo_config(args.env_name)
     
-    import numpy as np
-    import tensorflow as tf
-
-    def transfer_weights(jax_params, tf_model):
-        """
-        Transfer weights from a JAX parameter dictionary to the TensorFlow model.
-
-        Parameters:
-        - jax_params: dict
-        Nested dictionary with structure {block_name: {layer_name: {params}}}.
-        For example:
-        {
-            'CNN_0': {
-            'Conv_0': {'kernel': np.ndarray},
-            'Conv_1': {'kernel': np.ndarray},
-            'Conv_2': {'kernel': np.ndarray},
-            },
-            'MLP_0': {
-            'hidden_0': {'kernel': np.ndarray, 'bias': np.ndarray},
-            'hidden_1': {'kernel': np.ndarray, 'bias': np.ndarray},
-            'hidden_2': {'kernel': np.ndarray, 'bias': np.ndarray},
-            }
-        }
-
-        - tf_model: tf.keras.Model
-        An instance of the adapted VisionMLP model containing named submodules and layers.
-        """
-        for layer_name, layer_params in jax_params.items():
-            try:
-                tf_layer = tf_model.get_layer("MLP_0").get_layer(name=layer_name)
-            except ValueError:
-                print(f"Layer {layer_name} not found in TensorFlow model.")
-                continue
-            if isinstance(tf_layer, tf.keras.layers.Dense):
-                kernel = np.array(layer_params['kernel'])
-                bias = np.array(layer_params['bias'])
-                print(f"Transferring Dense layer {layer_name}, kernel shape {kernel.shape}, bias shape {bias.shape}")
-                tf_layer.set_weights([kernel, bias])
-            else:
-                print(f"Unhandled layer type in {layer_name}: {type(tf_layer)}")
-
-        print("Weights transferred successfully.")
-
-    
-    transfer_weights(params[1]['params'], tf_policy_network)
-
-    
-    # Example inputs for the model
-    test_input = [np.ones((1, obs_size["state"][0]), dtype=np.float32)]
-
-    # Define the TensorFlow input signature
-    spec = [tf.TensorSpec(shape=(1, obs_size["state"][0]), dtype=tf.float32, name="obs")]
-
-    tensorflow_pred = tf_policy_network(test_input)[0]
-    # Build the model by calling it with example data
-    print(f"Tensorflow prediction: {tensorflow_pred}")
-
-    tf_policy_network.output_names = ['continuous_actions']
-
-    # opset 11 matches isaac lab.
-    model_proto, _ = tf2onnx.convert.from_keras(tf_policy_network, input_signature=spec, opset=11, output_path=output)
-
-    print(f"ONNX model saved to: {output}")
-
-
-def load_checkpoint(checkpoint: str):
-
-    path = pathlib.Path(checkpoint).resolve()
-
-    if not path.exists():
-        print(f"The given path does not exist on your system:\n{path}")
-        return
-    
-    
-    if path.is_dir():
-        # -> its a checkpoint directory that we need to load using orbax-checkpointer
-        print("Attempting to load checkpoint from full directory")
-        checkpointer = ocp.PyTreeCheckpointer()
-
-        try:
-            params = checkpointer.restore(path)
-            return params
-        except Exception as e:
-            print(f"Could not load from path the using orbax!\nFull Error:\n{e}\nPath:\n{path}")
-            return
+    # Dimensionen holen
+    if hasattr(env, "observation_size") and hasattr(env.observation_size, "keys"):
+         obs_size = env.observation_size["state"][0]
+    elif isinstance(env.observation_size, int):
+         obs_size = env.observation_size
     else:
-        # TODO we can probably remove this path and just always generate from the logging directory (less cases to handle -> easier to work with)
-        print("Attempting to load checkpoint from pickle file")
-        
-        with open(checkpoint, 'rb') as f:
-            params = pickle.load(f)
-            return params
-        return
+         obs_size = env.observation_size[0]
+         
+    act_size = env.action_size
+    print(f"Observation Size: {obs_size}, Action Size: {act_size}")
 
+    # Parameter laden
+    raw_params = load_checkpoint(args.checkpoint)
+    mean, std, policy_params = get_params_robust(raw_params)
+
+    # Dictionary unpacking
+    if isinstance(mean, dict):
+        if "state" in mean: mean = mean["state"]
+        else: mean = mean[list(mean.keys())[0]]
+
+    if isinstance(std, dict):
+        if "state" in std: std = std["state"]
+        else: std = std[list(std.keys())[0]]
+
+    # Modell bauen
+    mean_std_tf = (tf.convert_to_tensor(mean), tf.convert_to_tensor(std))
+    tf_model = make_policy_network(
+        param_size=act_size * 2,
+        mean_std=mean_std_tf,
+        hidden_layer_sizes=ppo_params.network_factory.policy_hidden_layer_sizes
+    )
+    
+    # Init
+    dummy_input = tf.zeros((1, obs_size))
+    tf_model(dummy_input)
+
+    # Gewichte übertragen
+    print("Transferring weights...")
+    layer_idx = 0
+    if "params" in policy_params: mlp_base = policy_params["params"]
+    else: mlp_base = policy_params
+
+    if "MLP_0" in mlp_base: mlp_params = mlp_base["MLP_0"]
+    else: mlp_params = mlp_base[list(mlp_base.keys())[0]]
+
+    layer_names = sorted(mlp_params.keys())
+    for name in layer_names:
+        l_params = mlp_params[name]
+        if not isinstance(l_params, dict) or 'kernel' not in l_params: continue
+
+        tf_layer = tf_model.mlp.layers[layer_idx]
+        kernel = np.array(l_params['kernel'])
+        bias = np.array(l_params['bias'])
+        
+        tf_layer.set_weights([kernel, bias])
+        print(f"Layer {name} populated: {kernel.shape}")
+        layer_idx += 1
+
+    # Export
+    print(f"Exporting to {args.output}...")
+    spec = [tf.TensorSpec(shape=(1, obs_size), dtype=tf.float32, name="obs")]
+    tf_model.output_names = ['continuous_actions']
+    
+    os.makedirs(os.path.dirname(args.output), exist_ok=True)
+    tf2onnx.convert.from_keras(tf_model, input_signature=spec, opset=11, output_path=args.output)
+    print(f"✅ Success! Saved to {args.output}")
 
 if __name__ == "__main__":
-    argparser = ArgumentParser()
-    argparser.add_argument("-c", "--checkpoint", type=str,required=True)
-    argparser.add_argument("-o", "--output", type=str, default="wolvesOP_policy.onnx")
-    argparser.add_argument("-e", "--env-name", type=str, default="WolvesOPJoystickFlatTerrain")
-    args = argparser.parse_args()
-    conv_to_onnx(args.checkpoint, args.output, args.env_name)
-
-
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--checkpoint", type=str, required=True)
+    parser.add_argument("--output", type=str, default="policy.onnx")
+    parser.add_argument("--env-name", type=str, default="WolvesOPJoystickFlatTerrain")
+    args = parser.parse_args()
+    main(args)

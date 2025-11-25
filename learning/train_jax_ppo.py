@@ -45,6 +45,8 @@ from mujoco_playground.config import dm_control_suite_params
 from mujoco_playground.config import locomotion_params
 from mujoco_playground.config import manipulation_params
 
+from utils.convert_to_onnx import conv_to_onnx
+
 xla_flags = os.environ.get("XLA_FLAGS", "")
 xla_flags += " --xla_gpu_triton_gemm_any=True"
 os.environ["XLA_FLAGS"] = xla_flags
@@ -66,7 +68,7 @@ warnings.filterwarnings("ignore", category=UserWarning, module="absl")
 
 _ENV_NAME = flags.DEFINE_string(
     "env_name",
-    "LeapCubeReorient",
+    "WolvesOPJoystickFlatTerrain",
     f"Name of the environment. One of {', '.join(registry.ALL_ENVS)}",
 )
 _VISION = flags.DEFINE_boolean("vision", False, "Use vision input")
@@ -159,6 +161,8 @@ _TRAINING_METRICS_STEPS = flags.DEFINE_integer(
     "Number of steps between logging training metrics. Increase if training"
     " experiences slowdown.",
 )
+
+_ONNX_OUTPUT_FOLDER = flags.DEFINE_string("model", None, "name of the folder to where model artifacts (onnx, ...) are exported to (leave empty to not export any artifacts)")
 
 
 def get_rl_config(env_name: str) -> config_dict.ConfigDict:
@@ -441,6 +445,28 @@ def main(argv):
     print(f"Time to JIT compile: {times[1] - times[0]}")
     print(f"Time to train: {times[-1] - times[1]}")
 
+  # export additional files, that can later be used to run the policy in sim/reallife
+  if _ONNX_OUTPUT_FOLDER.present:
+    output_dir = (logdir) / _ONNX_OUTPUT_FOLDER.value
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    # check if some training was actually done this run (will try to export from the loaded checkpoint instead if not)
+    if restore_checkpoint_path is None and _NUM_TIMESTEPS.value != 0:
+      # get the name of the last checkpoint
+      checkpoints = [d for d in os.listdir(ckpt_path) if os.path.isdir(os.path.join(ckpt_path, d))]
+      
+      if len(checkpoints) > 0:
+        latest_checkpoint = checkpoints[-1]
+      else:
+        latest_checkpoint = None
+    else:
+      latest_checkpoint = restore_checkpoint_path
+
+    if latest_checkpoint is None:
+      print("[ERROR] tried generating policy artifacts, but was unable to find a checkpoint to export from")
+    else:
+      conv_to_onnx(latest_checkpoint, output_dir / "wolvesOP_policy.onnx", _ENV_NAME.value)
+  
   print("Starting inference...")
 
   # Create inference function

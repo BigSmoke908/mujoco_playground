@@ -1,16 +1,15 @@
+import os
 from dm_control import mjcf
-from dm_control.utils import xml_util
 
-# Eingabe und Ausgabe
 input_file = "humanoid_v49.urdf"
-output_file = "humanoid_v49.xml"
+output_file = "humanoid_converted.xml"
 
-# Konvertieren
-mj_model = mjcf.from_path(input_file)  # lädt URDF
-xml_str = mj_model.to_xml_string()     # als MJCF XML
+# Konvertierung
+print(f"Konvertiere {input_file} → {output_file} ...")
+model = mjcf.from_file(input_file)
 
 # Speichern
-with open(output_file, "wb") as f:
-    f.write(xml_str)
+with open(output_file, "w") as f:
+    f.write(model.to_xml_string())
 
-print(f"Konvertierung abgeschlossen: {output_file}")
+print(f"Fertig! Gespeichert als {output_file}")

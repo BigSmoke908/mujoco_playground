@@ -20,8 +20,8 @@ import mujoco.viewer as viewer
 import numpy as np
 import onnxruntime as rt
 
-from mujoco_playground._src.locomotion.t1 import t1_constants
-from mujoco_playground._src.locomotion.t1.base import get_assets
+from mujoco_playground._src.locomotion.wolves_op import wolvesop_constants
+from mujoco_playground._src.locomotion.wolves_op.base import get_assets
 from mujoco_playground.experimental.sim2sim.keyboard_gamepad import KeyboardGamepad
 
 _HERE = epath.Path(__file__).parent
@@ -29,7 +29,7 @@ _ONNX_DIR = _HERE / "onnx"
 
 
 class OnnxController:
-  """ONNX controller for the Booster T1 humanoid."""
+  """ONNX controller for the wolvesOP humanoid."""
 
   def __init__(
       self,
@@ -53,7 +53,6 @@ class OnnxController:
 
     self._counter = 0
     self._n_substeps = n_substeps
-    self._ctrl_dt = ctrl_dt
 
     self._phase = np.array([0.0, np.pi])
     self._gait_freq = 1.5
@@ -70,15 +69,12 @@ class OnnxController:
     gyro = data.sensor("gyro").data
     imu_xmat = data.site_xmat[model.site("imu").id].reshape(3, 3)
     gravity = imu_xmat.T @ np.array([0, 0, -1])
+
     joint_angles = data.qpos[7:] - self._default_angles
     joint_velocities = data.qvel[6:]
+    phase = np.concatenate([np.cos(self._phase), np.sin(self._phase)])
     command = self._joystick.get_command()
-    ph = self._phase if np.linalg.norm(command) >= 0.01 else np.ones(2) * np.pi
-    phase = np.concatenate([np.cos(ph), np.sin(ph)])
-    joint_angles[:2] *= 0.0
-    joint_velocities[:2] *= 0.0
     obs = np.hstack([
-        linvel,
         gyro,
         gravity,
         command,
@@ -105,12 +101,13 @@ def load_callback(model=None, data=None):
   mujoco.set_mjcb_control(None)
 
   model = mujoco.MjModel.from_xml_path(
-      t1_constants.FEET_ONLY_ROUGH_TERRAIN_XML.as_posix(),
+      wolvesop_constants.FEET_ONLY_FLAT_TERRAIN_XML.as_posix(),
       assets=get_assets(),
   )
+
   data = mujoco.MjData(model)
 
-  mujoco.mj_resetDataKeyframe(model, data, 0)
+  mujoco.mj_resetDataKeyframe(model, data, 1)
 
   ctrl_dt = 0.02
   sim_dt = 0.002
@@ -118,13 +115,13 @@ def load_callback(model=None, data=None):
   model.opt.timestep = sim_dt
 
   policy = OnnxController(
-      policy_path=(_ONNX_DIR / "t1_policy.onnx").as_posix(),
+      policy_path=(_ONNX_DIR / "wolves_op_policy.onnx").as_posix(),
       default_angles=np.array(model.keyframe("home").qpos[7:]),
       ctrl_dt=ctrl_dt,
       n_substeps=n_substeps,
-      action_scale=1.0,
+      action_scale=0.5,
       vel_scale_x=1.0,
-      vel_scale_y=0.8,
+      vel_scale_y=1.0,
       vel_scale_rot=1.0,
   )
 

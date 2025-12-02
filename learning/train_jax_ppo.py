@@ -20,6 +20,7 @@ import json
 import os
 import time
 import warnings
+import subprocess
 
 from absl import app
 from absl import flags
@@ -50,6 +51,43 @@ xla_flags += " --xla_gpu_triton_gemm_any=True"
 os.environ["XLA_FLAGS"] = xla_flags
 os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"
 os.environ["MUJOCO_GL"] = "egl"
+
+
+def _check_gpu_and_warn():
+  """Check system GPU visibility and JAX GPU devices, print a warning if training will fall back to CPU."""
+  try:
+    # is nvidia-smi available / visible to this process?
+    nvidia_rc = subprocess.run(
+        ["nvidia-smi"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+    ).returncode
+    nvidia_ok = nvidia_rc == 0
+  except Exception:
+    nvidia_ok = False
+
+  # Does JAX see any GPU devices?
+  try:
+    jax_devices = jax.devices()
+    jax_has_gpu = any(getattr(d, "platform", "").lower() == "gpu" for d in jax_devices)
+  except Exception as e:
+    print("\033[91mError checking jax.devices():\033[0m", e)
+    jax_has_gpu = False
+
+  if nvidia_ok and not jax_has_gpu:
+    logging.error(
+        "\033[91mGPU detected by system (nvidia-smi), but JAX cannot see any GPU devices — "
+        "training will run on CPU! This often means JAX was installed without CUDA/cuDNN "
+        "or CUDA is not visible in this environment.\033[0m"
+    )
+  elif not nvidia_ok and jax_has_gpu:
+    logging.warning(
+        "\033[93mJAX sees a GPU, but 'nvidia-smi' is missing — drivers not fully installed?\033[0m"
+    )
+  elif not jax_has_gpu:
+    logging.warning("\033[93mNo GPU devices detected by JAX. Training will run on CPU.\033[0m")
+  else:
+    print("\033[92mGPU detected and available for JAX. Training will run on GPU.\033[0m")
+
+
 
 # Ignore the info logs from brax
 logging.set_verbosity(logging.WARNING)
@@ -357,6 +395,10 @@ def main(argv):
 
   if "num_eval_envs" in training_params:
     del training_params["num_eval_envs"]
+
+
+  _check_gpu_and_warn()
+
 
   train_fn = functools.partial(
       ppo.train,

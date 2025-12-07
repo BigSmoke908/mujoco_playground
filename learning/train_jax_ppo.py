@@ -456,16 +456,19 @@ def main(argv):
       checkpoints = [d for d in os.listdir(ckpt_path) if os.path.isdir(os.path.join(ckpt_path, d))]
       
       if len(checkpoints) > 0:
-        latest_checkpoint = checkpoints[-1]
+        # --- FIX START ---
+        # 1. Sortieren, um sicherzustellen, dass es wirklich der letzte ist
+        checkpoints.sort(key=int) 
+        # 2. Den vollen Pfad zusammensetzen
+        latest_checkpoint = ckpt_path / checkpoints[-1]
+        # --- FIX END ---
       else:
         latest_checkpoint = None
-    else:
-      latest_checkpoint = restore_checkpoint_path
 
     if latest_checkpoint is None:
       print("[ERROR] tried generating policy artifacts, but was unable to find a checkpoint to export from")
     else:
-      conv_to_onnx(latest_checkpoint, output_dir / "wolvesOP_policy.onnx", _ENV_NAME.value)
+      conv_to_onnx(latest_checkpoint, output_dir / "wolves_op_policy.onnx", _ENV_NAME.value)
   
   print("Starting inference...")
 

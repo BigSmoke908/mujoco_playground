@@ -8,12 +8,20 @@
  - bsp.: `python learning/train_jax_ppo.py ... --model=model`
  - der Ordner wird automatisch neben den checkpoint-Order (`logs/WolvesOPJoystickFlatTerrain-..../checkpoints/`) platziert und enthält alle Artefakte
 
+### Vollständiges funktionierendes Beispiel
+`python learning/train_jax_ppo.py --env_name=WolvesOPJoystickFlatTerrain --model=model`
+
 ## nach dem Training
 
  - die ONNX Datei (+andere Artefakte) kann nach dem abgeschlossenen Training jederzeit aus den checkpoints erzeugt werden
  - hierfür das [convert_to_onnx.py](../learning/utils/convert_to_onnx.py) Skript wie folgt aufrufen:
  
  `python learning/utils/convert_to_onnx.py --checkpoint={CHECKPOINT} --output={OUTPUT} --env_name={ENV_NAME}`
+
+### Vollständiges funktionierendes Beispiel
+`python learning/utils/convert_to_onnx.py --checkpoint=docs/working_policy/WolvesOPJoystickFlatTerrain-20251207-163905/checkpoint/000151388160 --output=mujoco_playground/experimental/sim2sim/onnx/wolves_op_policy.onnx --env_name=WolvesOPJoystickFlatTerrain`
+
+- Zum Testen der erzeugten ONNX-Datei dann : `python mujoco_playground/experimental/sim2sim/play_wolvesOP_joystick.py`
 
 
 ### Parameter erklärt

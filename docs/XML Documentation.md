@@ -7,7 +7,7 @@ Um aus einer URDF File eine passende XML zu machen, muss man diese hierzu erstma
 
 ----------------------------------------------------------------------------------------------------------------------------------
 Konverter: 
-
+```
 import mujoco
 import argparse
 import sys
@@ -28,6 +28,7 @@ model = mujoco.MjModel.from_xml_path(input_file)
 xml_string = mujoco.mj_saveLastXML(output_file, model)
 
 print(f"✔ Fertig! Gespeichert als {output_file}")
+```
 ----------------------------------------------------------------------------------------------------------------------------------
 
 # Anpassungen an der grundlegenden XML:

@@ -49,3 +49,10 @@
 
 
 
+## Weiterführende Dokumentationen
+
+Detaillierte Informationen zu den vorgenommenen Anpassungen und der Portierung der Umgebung findest du hier:
+
+* [Environment Documentation](Environment_Albaraa.md) – Beschreibt die Erstellung der `WolvesOP`-Umgebung, Anpassungen an den Python-Skripten,Hintergründe zu den Asset-Pfaden und Integration & Registrierung.
+
+

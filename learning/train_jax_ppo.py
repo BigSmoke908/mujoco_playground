@@ -20,6 +20,7 @@ import json
 import os
 import time
 import warnings
+import subprocess
 
 from absl import app
 from absl import flags
@@ -45,11 +46,50 @@ from mujoco_playground.config import dm_control_suite_params
 from mujoco_playground.config import locomotion_params
 from mujoco_playground.config import manipulation_params
 
+from utils.convert_to_onnx import conv_to_onnx
+
 xla_flags = os.environ.get("XLA_FLAGS", "")
 xla_flags += " --xla_gpu_triton_gemm_any=True"
 os.environ["XLA_FLAGS"] = xla_flags
 os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"
 os.environ["MUJOCO_GL"] = "egl"
+
+
+def _check_gpu_and_warn():
+  """Check system GPU visibility and JAX GPU devices, print a warning if training will fall back to CPU."""
+  try:
+    # is nvidia-smi available / visible to this process?
+    nvidia_rc = subprocess.run(
+        ["nvidia-smi"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+    ).returncode
+    nvidia_ok = nvidia_rc == 0
+  except Exception:
+    nvidia_ok = False
+
+  # Does JAX see any GPU devices?
+  try:
+    jax_devices = jax.devices()
+    jax_has_gpu = any(getattr(d, "platform", "").lower() == "gpu" for d in jax_devices)
+  except Exception as e:
+    print("\033[91mError checking jax.devices():\033[0m", e)
+    jax_has_gpu = False
+
+  if nvidia_ok and not jax_has_gpu:
+    logging.error(
+        "\033[91mGPU detected by system (nvidia-smi), but JAX cannot see any GPU devices — "
+        "training will run on CPU! This often means JAX was installed without CUDA/cuDNN "
+        "or CUDA is not visible in this environment.\033[0m"
+    )
+  elif not nvidia_ok and jax_has_gpu:
+    logging.warning(
+        "\033[93mJAX sees a GPU, but 'nvidia-smi' is missing — drivers not fully installed?\033[0m"
+    )
+  elif not jax_has_gpu:
+    logging.warning("\033[93mNo GPU devices detected by JAX. Training will run on CPU.\033[0m")
+  else:
+    print("\033[92mGPU detected and available for JAX. Training will run on GPU.\033[0m")
+
+
 
 # Ignore the info logs from brax
 logging.set_verbosity(logging.WARNING)
@@ -66,7 +106,7 @@ warnings.filterwarnings("ignore", category=UserWarning, module="absl")
 
 _ENV_NAME = flags.DEFINE_string(
     "env_name",
-    "LeapCubeReorient",
+    "WolvesOPJoystickFlatTerrain",
     f"Name of the environment. One of {', '.join(registry.ALL_ENVS)}",
 )
 _VISION = flags.DEFINE_boolean("vision", False, "Use vision input")
@@ -159,6 +199,8 @@ _TRAINING_METRICS_STEPS = flags.DEFINE_integer(
     "Number of steps between logging training metrics. Increase if training"
     " experiences slowdown.",
 )
+
+_ONNX_OUTPUT_FOLDER = flags.DEFINE_string("model", None, "name of the folder to where model artifacts (onnx, ...) are exported to (leave empty to not export any artifacts)")
 
 
 def get_rl_config(env_name: str) -> config_dict.ConfigDict:
@@ -358,6 +400,10 @@ def main(argv):
   if "num_eval_envs" in training_params:
     del training_params["num_eval_envs"]
 
+
+  _check_gpu_and_warn()
+
+
   train_fn = functools.partial(
       ppo.train,
       **training_params,
@@ -441,6 +487,31 @@ def main(argv):
     print(f"Time to JIT compile: {times[1] - times[0]}")
     print(f"Time to train: {times[-1] - times[1]}")
 
+  # export additional files, that can later be used to run the policy in sim/reallife
+  if _ONNX_OUTPUT_FOLDER.present:
+    output_dir = (logdir) / _ONNX_OUTPUT_FOLDER.value
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    # check if some training was actually done this run (will try to export from the loaded checkpoint instead if not)
+    if restore_checkpoint_path is None and _NUM_TIMESTEPS.value != 0:
+      # get the name of the last checkpoint
+      checkpoints = [d for d in os.listdir(ckpt_path) if os.path.isdir(os.path.join(ckpt_path, d))]
+      
+      if len(checkpoints) > 0:
+        # --- FIX START ---
+        # 1. Sortieren, um sicherzustellen, dass es wirklich der letzte ist
+        checkpoints.sort(key=int) 
+        # 2. Den vollen Pfad zusammensetzen
+        latest_checkpoint = ckpt_path / checkpoints[-1]
+        # --- FIX END ---
+      else:
+        latest_checkpoint = None
+
+    if latest_checkpoint is None:
+      print("[ERROR] tried generating policy artifacts, but was unable to find a checkpoint to export from")
+    else:
+      conv_to_onnx(latest_checkpoint, output_dir / "wolves_op_policy.onnx", _ENV_NAME.value)
+  
   print("Starting inference...")
 
   # Create inference function

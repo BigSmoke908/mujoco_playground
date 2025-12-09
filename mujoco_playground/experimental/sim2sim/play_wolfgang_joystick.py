@@ -75,6 +75,7 @@ class OnnxController:
     phase = np.concatenate([np.cos(self._phase), np.sin(self._phase)])
     command = self._joystick.get_command()
     obs = np.hstack([
+        linvel,
         gyro,
         gravity,
         command,

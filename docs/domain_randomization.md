@@ -34,10 +34,10 @@ Die Konvention ist, dass jedes Locomotion-Environment eine [randomize.py](../muj
  - Random Massen: die Masse aller Bauteile sind leicht skaliert
  - Random COMs: die COMs (Center-Of-Mass/Schwerpunkte) der Bauteile sind leicht verschoben
  - Random qpos0: Startposition bei jeder Episode ist leicht verschieden
+ - Random Pertubations: jede Rotationsaxe ist zufällig ein kleines bisschen verdreht
 
 
 ## Was könnte man noch einbauen
 
- - Random Pertubations: jede Rotationsaxe ist zufällig ein kleines bisschen verdreht
  - Random Backlash: jeder Motor hat auch wenn er eine fest Position anfährt ein gewisses Spiel (kann noch ein bisschen gedreht werden) (scheint nicht nativ in Mujoco umgesetzt zu sein->https://mujoco.readthedocs.io/en/stable/modeling.html#backlash)
  - 

@@ -98,6 +98,16 @@ def domain_randomize(model: mjx.Model, rng: jax.Array):
         qpos0[7:]
         + jax.random.uniform(key, shape=(12,), minval=-0.05, maxval=0.05)
     )
+    
+    # change angle of all joints randomly slightly
+    max_angle_offset = jax.numpy.deg2rad(2)
+    rng, key = jax.random.split(rng)
+    delta = jax.random.uniform(
+      key, shape=(model.njnt, 3), minval=-max_angle_offset, maxval=max_angle_offset 
+    )
+    # add delta (random angle that is at maximum ~2 deegres) to jnt_axis + normalize the rpy-vector
+    joint_axis = model.jnt_axis + delta
+    joint_axis = joint_axis / jax.numpy.linalg.norm(joint_axis, axis=1, keepdims=True)
 
     return (
         geom_friction,
@@ -109,6 +119,7 @@ def domain_randomize(model: mjx.Model, rng: jax.Array):
         body_mass,
         body_com,
         qpos0,
+        joint_axis,
     )
 
   (
@@ -121,6 +132,7 @@ def domain_randomize(model: mjx.Model, rng: jax.Array):
       body_mass,
       body_com,
       qpos0,
+      joint_axis,
   ) = rand_dynamics(rng)
 
   in_axes = jax.tree_util.tree_map(lambda x: None, model)
@@ -134,6 +146,7 @@ def domain_randomize(model: mjx.Model, rng: jax.Array):
       "body_mass": 0,
       "body_ipos": 0,
       "qpos0": 0,
+      "jnt_axis": 0,
   })
 
   model = model.tree_replace({
@@ -146,6 +159,7 @@ def domain_randomize(model: mjx.Model, rng: jax.Array):
       "body_mass": body_mass,
       "body_ipos": body_com,
       "qpos0": qpos0,
+      "jnt_axis": joint_axis,
   })
 
   return model, in_axes

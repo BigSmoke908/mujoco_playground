@@ -1,10 +1,10 @@
-from argparse import ArgumentParser
 import pathlib
 import orbax.checkpoint as ocp
 import pickle
 
 
 def conv_to_onnx(checkpoint: str, output: str, env_name: str):
+    # TODO expand this function export more metadata (like the structure of observation/action spaces)
     import os
     os.environ["MUJOCO_GL"] = "egl"
     os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"
@@ -205,7 +205,7 @@ def load_checkpoint(checkpoint: str):
             print(f"Could not load from path the using orbax!\nFull Error:\n{e}\nPath:\n{path}")
             return
     else:
-        # TODO we can probably remove this path and just always generate from the logging directory (less cases to handle -> easier to work with)
+        # TODO -> needed for us? (we could just always use the log directory anyways)
         print("Attempting to load checkpoint from pickle file")
         
         with open(checkpoint, 'rb') as f:
@@ -214,12 +214,18 @@ def load_checkpoint(checkpoint: str):
         return
 
 
+def main(argv):
+    del argv
+    # required because we need to call app.run(...) in order for flags to work
+    conv_to_onnx(_CHECKPOINT_PATH.value, _OUTPUT_PATH.value, _ENV_NAME.value)
+
+
 if __name__ == "__main__":
-    argparser = ArgumentParser()
-    argparser.add_argument("-c", "--checkpoint", type=str,required=True)
-    argparser.add_argument("-o", "--output", type=str, default="wolvesOP_policy.onnx")
-    argparser.add_argument("-e", "--env-name", type=str, default="WolvesOPJoystickFlatTerrain")
-    args = argparser.parse_args()
-    conv_to_onnx(args.checkpoint, args.output, args.env_name)
+    from absl import flags
+    from absl import app
 
+    _CHECKPOINT_PATH = flags.DEFINE_string("checkpoint", None, "path to a checkpoint after training. Example: \"logs/WolvesOPJoystickFlatTerrain-20251109-183828/checkpoints/000151388160/\"", required=True)
+    _OUTPUT_PATH = flags.DEFINE_string("output", "wolvesOP_policy.onnx", "filepath where the generated .onnx is saved")
+    _ENV_NAME = flags.DEFINE_string("env_name", "WolvesOPJoystickFlatTerrain", "locomotion environment which was used for training the policy")
 
+    app.run(main)

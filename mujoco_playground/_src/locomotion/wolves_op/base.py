@@ -29,11 +29,22 @@ from mujoco_playground._src.locomotion.wolves_op import wolvesop_constants as co
 
 def get_assets() -> Dict[str, bytes]:
   assets = {}
+  
+  # 1. XMLs laden
   mjx_env.update_assets(assets, consts.ROOT_PATH / "xmls", "*.xml")
   mjx_env.update_assets(assets, consts.ROOT_PATH / "xmls" / "assets")
+
+  # 2. STL Dateien laden
+  stl_path = consts.ROOT_PATH / "xmls" / "stls"
+  for f in stl_path.glob("*.stl"):
+      if f.is_file():
+          # XML sucht nach "stls/name.stl", also nennen wir den Key auch so!
+          assets[f"stls/{f.name}"] = f.read_bytes()
+
   path = mjx_env.MENAGERIE_PATH / "wolvesop"
   mjx_env.update_assets(assets, path, "*.xml")
   mjx_env.update_assets(assets, path / "assets")
+  
   return assets
 
 

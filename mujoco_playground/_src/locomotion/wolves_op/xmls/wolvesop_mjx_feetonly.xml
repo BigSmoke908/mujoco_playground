@@ -36,7 +36,7 @@
     </default>
   </default>
 
-   <asset>
+  <asset>
     <material name="black" rgba="0.2 0.2 0.2 1" />
   </asset>
 

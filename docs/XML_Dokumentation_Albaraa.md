@@ -236,7 +236,8 @@ Dies erlaubt eine sehr saubere Definition der Körper (body), da man nur noch di
   </sensor>
 ``` 
 
-* Es werden später für die policy nicht alle Werte verwendet. Aber alle Werte werden für das Training an sich benötigt
+Es werden später für die policy nicht alle Werte verwendet. Aber alle Werte werden für das Training an sich benötigt. In `mujoco_playground/_src/locomotion/wolves_op/joystick.py` kann folgendes daraus abgeleitet werden:
+
 * `priviled_state` sind die Daten die fürs Training benötigt werden
   
 ```
@@ -321,5 +322,9 @@ Die Datei `scene_mjx_feetonly_flat_terrain.xml` ist der Einstiegspunkt für das 
   </keyframe>
 </mujoco>
 ```
+* Das meiste wurde von `mujoco_playground/_src/locomotion/wolfgang/xmls/scene_mjx_feetonly_flat_terrain.xml` übernommen.
+  * Name muss angepasst werden `<mujoco model="wolves-op feetonly flat terrain scene">
+  <include file="wolvesop_mjx_feetonly.xml" />`
+* **Wichtig**: Der `<keyframe>` muss manuell über den mujoco viewer ermittelt werden, damit eine passende Anfamgstrainingsposition entsteht
 
 Durch diese Trennung können wir den gleichen Roboter einfach in verschiedene Umgebungen (Flat Terrain, Rough Terrain) setzen, ohne die Roboter-XML kopieren zu müssen.

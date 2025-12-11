@@ -291,5 +291,5 @@ Die einzigen vorgenommenen Änderungen sind hier die inkludierte Datei `<include
 
 ## Dateistruktur & Assets
 
-Ähnlich wie eine `URDF`-Datei verwenden auch Mujoco-XML-Modell im Hintergrund .stdl-Dateien um Meshes zu laden. Wenn sich die eigentliche Mujoco-XML in dem `xmls`-Ordner des Environment-Ordners befindet, müssen diese .stl-Dateien in `xmls/stls/` platziert werden.
+Ähnlich wie eine `URDF`-Datei verwenden auch Mujoco-XML-Modell im Hintergrund .stdl-Dateien um Meshes zu laden. Diese müssen in `xmls/stls/` platziert werden.
 

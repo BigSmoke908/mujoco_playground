@@ -100,6 +100,9 @@ class OnnxController:
 
       actions.append(onnx_pred)
       observations.append(obs)
+
+      get_joint_positions(model, data)
+      print(f"[LOG!!!!!] {type(model)}")
       
       if not sensor_addr:
         sensor_addr = get_actuated_joint_names(model)
@@ -149,16 +152,33 @@ def get_actuated_joint_names(model) -> list[str]:
   return joint_names
 
 
+def get_joint_positions(model, data):
+  global jnts
+
+  j = []
+  for joint in range(model.njnt):
+    j.append(data.joint(joint).qpos)
+  jnts.append(j)
+
+
 actions = []
 observations = []
 sensor_addr = []
+jnts = []
 
 
 if __name__ == "__main__":
   viewer.launch(loader=load_callback)
-
+  print(len(jnts))
+  print(jnts[0])
+  
   import json
 
-  open('act.json', 'w+').write(json.dumps([[float(x) for x in l] for l in actions]))
-  open('obs.json', 'w+').write(json.dumps([[float(x) for x in l] for l in observations]))
-  open('joint_names.json', 'w+').write(json.dumps(sensor_addr))
+  # open('act.json', 'w+').write(json.dumps([[float(x) for x in l] for l in actions]))
+  # open('obs.json', 'w+').write(json.dumps([[float(x) for x in l] for l in observations]))
+  # open('joint_names.json', 'w+').write(json.dumps(sensor_addr))
+  # print(jnts[0].shape)
+  open('jnts.json', '+w').write(json.dumps([[[float(y) for y in x] for x in l] for l in jnts]))
+  
+
+

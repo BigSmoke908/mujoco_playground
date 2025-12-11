@@ -19,13 +19,11 @@ Die Datei wurde von `wolfgang_constants.py` in `wolvesop_constants.py` umbenannt
 
 * **Pfadanpassung:** Die Variable `ROOT_PATH` wurde geändert, damit Assets und XML-Dateien im neuen `wolves_op`-Verzeichnis gesucht werden.
     ```python
-    # Alt (Wolfgang)
-    ROOT_PATH = mjx_env.ROOT_PATH / "locomotion" / "wolfgang"
-    
-    # Neu (WolvesOP)
+    ...
     ROOT_PATH = mjx_env.ROOT_PATH / "locomotion" / "wolves_op"
+    ...
     ```
-* **Sensorik & Geometrie:** Die Definitionen für Füße (`FEET_SITES`, `FEET_GEOMS`) und Sensoren wurden zunächst beibehalten, da die Benennungskonventionen im XML (z. B. `l_foot`, `r_foot`) übernommen wurden.
+* **Sensorik & Geometrie:** Die Definitionen für Füße (`FEET_SITES`, `FEET_GEOMS`) und Sensoren wurden zunächst beibehalten, da die Namen in der XML (z. B. `l_foot`, `r_foot`) an das Basis-Environment angepasst wurden.
 
 ### B. Basis-Umgebung (`base.py`)
 
@@ -35,10 +33,8 @@ Hier wurden die grundlegenden Funktionen zum Laden des Modells und der Assets im
     Die Hauptklasse wurde von `WolfgangEnv` in `WolvesOPEnv` umbenannt, um Konflikte zu vermeiden und die Zugehörigkeit klarzustellen.
 
 2.  **Erweitertes Asset-Loading (`get_assets`):**
-    Dies war eine der wichtigsten Änderungen. Während das Original-Skript Assets eher generisch lud, mussten wir für WolvesOP sicherstellen, dass spezifische STL-Dateien (Meshes) korrekt erkannt und gemappt werden.
     
-    * **Problem:** Das XML erwartet Meshes oft unter Pfaden wie `stls/name.stl`.
-    * **Lösung:** Es wurde eine explizite Schleife hinzugefügt, die alle `.stl`-Dateien im Ordner `xmls/stls` einliest und sie mit dem korrekten Key (`stls/filename.stl`) in das Asset-Dictionary lädt.
+    In dem Standard-Mujoco-Playground werden stl-Dateien über die Mujoco-Menagerie verwaltet. Um den Prozess für uns zu vereinfachen, haben wir das Asset-Loading Script angepasst um so die Menagerie zu umgehen:
     
     ```python
     # Hinzugefügt in WolvesOP:
@@ -65,31 +61,64 @@ Die Datei `joystick.py` steuert das Verhalten des Roboters und berechnet die Bel
 
 ## 3. Integration & Registrierung
 
-Damit das Trainingsskript `train_jax_ppo.py` die neue Umgebung finden und nutzen kann, müssen drei Komponenten zusammenspielen.
+> Damit das Trainingsskript `train_jax_ppo.py` die neue Umgebung finden und nutzen kann, müssen zwei Komponenten angepasst werden.
 
-### A. Registrierung (`mujoco_playground/_src/locomotion/__init__.py`)
-Hier wird der String-Name (den wir im Terminal verwenden) mit der Python-Klasse verknüpft.
-* **Eintrag:** `WolvesOPJoystickFlatTerrain` -> `wolves_op.joystick.Joystick`
-* **Funktion:** Das Skript importiert die Klasse und stellt sie dem System zur Verfügung.
+### Registrierung (`mujoco_playground/_src/locomotion/__init__.py`)
 
-### B. Globale Registry (`mujoco_playground/_src/registry.py`)
-Diese Datei fungiert als Verteiler. Wenn `train_jax_ppo.py` eine Umgebung anfordert, prüft `registry.py`, ob der Name in den bekannten Umgebungen (`locomotion.ALL_ENVS`) vorhanden ist und leitet den Ladebefehl entsprechend weiter.
+> hier werden alle Environments inklusive Environment, Default-Config und Domain-Randomizer angegeben. Zu beachten ist, dass der Environmentname (hier "WolvesOPJoystickFlatTerrain") an allen Stellen übereinstimmt.
 
-### C. Trainings-Parameter (`mujoco_playground/config/locomotion_params.py`)
-Hier werden die Hyperparameter für das PPO-Training definiert. Ohne einen Eintrag hier weiß der Trainer nicht, wie er mit der Umgebung interagieren soll.
+Die Komponente importieren:
+```python
+...
+from mujoco_playground._src.locomotion.wolves_op import joystick as wolvesop_joystick
+from mujoco_playground._src.locomotion.wolves_op import randomize as wolvesop_randomize
+...
+```
 
-* **Hinzugefügter Block:**
+Das Environment verlinken:
     ```python
-    elif env_name in (
-        "WolvesOPJoystickFlatTerrain",
-        "WolvesOPJoystickRoughTerrain",
-    ):
-      rl_config.num_timesteps = 150_000_000
-      rl_config.num_evals = 15
-      rl_config.clipping_epsilon = 0.2
-      # ... weitere Parameter ...
-      rl_config.network_factory = config_dict.create(
-          policy_hidden_layer_sizes=(512, 256, 128),
-          # ...
-      )
+    _envs = {
+        ...
+        "WolvesOPJoystickFlatTerrain": functools.partial(
+            wolvesop_joystick.Joystick, task="flat_terrain"
+        ),
+    }
+    ```
+
+
+Ein Config mit default Werten für das Training verlinken. Diese Config bezieht sich auf spezifische Config-Werte für hauptsächlich die Rewards:
+    ```python
+    _cfgs = {
+        ...
+        "WolvesOPJoystickFlatTerrain": wolvesop_joystick.default_config,
+    }
+    ```
+
+Den Domain-Randomizer für das Environment angeben:
+    ```python
+    _randomizer = {
+        ...
+        "WolvesOPJoystickFlatTerrain": wolvesop_randomize.domain_randomize,
+    }
+    ```
+
+
+### Trainings-Parameter (`mujoco_playground/config/locomotion_params.py`)
+
+> Hier werden die Hyperparameter für das PPO-Training definiert
+
+**Hinzugefügter Block:**
+```python
+elif env_name in (
+    "WolvesOPJoystickFlatTerrain",
+    "WolvesOPJoystickRoughTerrain",
+):
+    rl_config.num_timesteps = 150_000_000
+    rl_config.num_evals = 15
+    rl_config.clipping_epsilon = 0.2
+    # ... weitere Parameter ...
+    rl_config.network_factory = config_dict.create(
+        policy_hidden_layer_sizes=(512, 256, 128),
+        # ...
+    )
     ```

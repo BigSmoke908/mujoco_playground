@@ -125,9 +125,39 @@ Dies erlaubt eine sehr saubere Definition der Körper (body), da man nur noch di
 </default>
 ```
 
-### C. Worldbody & Sites
+### C. Worldbody, Actuator & Sensoren
 
-#### Änderungen an den Joints
+#### Worldbody
+##### Generelle Änderungen
+
+```xml
+<light name="spotlight" mode="targetbodycom" target="torso" pos="3 0 4"/>
+    <body name="torso" pos="0 0 0.535" childclass="humanoid">
+      <freejoint />
+      <site name="imu" pos="0.06 0.045 0.000"/>
+      ....
+      </body>
+```
+* <light .../>: Wurde für die Beleuchtung hinzugefügt, damit man den Roboter in der Simulation besser sehen kann.
+* <body name="torso" ...>: Alle Teile wurden einem einzigen Body angehängt, damit der Roboter zusammenhängend angesprochen werden kann
+  * `<freejoint/>`: Dadurch wird ermöglicht, dass der Roboter sich frei im Raum bewegen kann und nicht mehr starr an einer Position hängt (wie im mjmodel.xml).
+  * `pos="0 0 0.535"`: Die Gesamthöhe des Roboters wurde erhöht, um initiale Bodenkollisionen beim Spawnen zu vermeiden
+  * `childclass="humanoid"`: Ermöglicht es, die oben definierten Unterklassen (visual, collision, mx106 etc.) für alle Kind-Elemente (Bodies und Geometrien) innerhalb des Torso-Körpers verfügbar zu machen. Die spezifische Anwendung (z.B. ob es eine Kollision oder nur eine Visualisierung ist) muss aber weiterhin explizit durch class="visual" oder class="collision" im jeweiligen <geom>-Tag gesetzt werden.
+  * `<site name="imu" .../>`: Eine IMU  wurde im Rumpf platziert. Diese ist unsichtbar, dient aber als Ankerpunkt für die IMU-Sensoren.
+
+##### Änderungen an `<geom/>`
+###### Hinzufügen von `collison`
+* `<geom name="r_foot1" class="collision"...>`
+* `<geom name="l_foot1" class="collision"...>`
+* Sonst wurden keine anderen Teile mit collision definiert
+
+###### Hinzufügen von `visuell`
+* Die restlichen nicht benötigten Teile dann mit visuell
+
+##### Änderungen an den Joints
+
+* Die Änderungen wurden vorgenommen, um dafür dann den Python Code nicht ändern zu müssen. Das heißt statt überall veteilt im Python Code Namensänderungen vorzunehmen, wurde sich in der XML-Datei fokussiert hier die Änderungen vorzunehmen.
+* Außerdem wurden nicht benötigte joints wie Arme auskommentiert, da diese im Code nicht verwendet und benötigt werden um das gehen zu ermöglichen
 
 | Original Name (mjmodel.xml) | Status         | Neuer Name (wolvesop_mjx_feetonly.xml) | Beschreibung           |
 | :-------------------------- | :------------- | :------------------------------------- | :--------------------- |
@@ -157,17 +187,88 @@ Dies erlaubt eine sehr saubere Definition der Körper (body), da man nur noch di
 | shoulder_roll_r             | Auskommentiert | -                                      | Schulter Roll          |
 | elbow_r                     | Auskommentiert | -                                      | Ellbogen               |
 
-#### Änderungen 
 
-#### Weitere Änderungen
-  * **Torso-Position:** Wurde angepasst (z.B. `pos="0 0 0.535"`), damit der Roboter korrekt auf dem Boden steht.
-  * **IMU-Site:** Eine `<site name="imu" .../>` wurde im Rumpf platziert. Diese ist unsichtbar, dient aber als Ankerpunkt für die IMU-Sensoren.
-
+#### Actuator
+* Hier wurden dann die umbenannten Joints einen Actuator mit der gleichen Bezeichnung zu geteilt
 
 ```xml
 <actuator>
-    <position name="r_hip_pitch" joint="r_hip_pitch_joint" class="mx106" user="1"/>
-    </actuator>
+
+    <!-- Right leg (Positionsregler) -->
+    <position joint="LR_HR" name="LR_HR" class="mx106" />
+    <position joint="LR_HAA" name="LR_HAA" class="mx106" />
+    <position joint="LR_HFE" name="LR_HFE" class="mx106" />
+    <position joint="LR_KFE" name="LR_KFE" class="mx106" />
+    <position joint="LR_FFE" name="LR_FFE" class="mx106" />
+    <position joint="LR_FAA" name="LR_FAA" class="mx106" />
+
+    <!-- Left leg (Positionsregler) -->
+    <position joint="LL_HR" name="LL_HR" class="mx106" />
+    <position joint="LL_HAA" name="LL_HAA" class="mx106" />
+    <position joint="LL_HFE" name="LL_HFE" class="mx106" />
+    <position joint="LL_KFE" name="LL_KFE" class="mx106" />
+    <position joint="LL_FFE" name="LL_FFE" class="mx106" />
+    <position joint="LL_FAA" name="LL_FAA" class="mx106" />
+  </actuator>
+```
+
+#### Sensoren
+* Für, die im Worldbody hinzugefügt IMU, werden nun die Spezifikationen dieser IMU definiert. 
+
+```xml
+<sensor>
+    <gyro site="imu" name="gyro"/>
+    <velocimeter site="imu" name="local_linvel"/>
+    <accelerometer site="imu" name="accelerometer"/>
+    <framezaxis objtype="site" objname="imu" name="upvector"/>
+    <framexaxis objtype="site" objname="imu" name="forwardvector"/>
+    <framelinvel objtype="site" objname="imu" name="global_linvel"/>
+    <frameangvel objtype="site" objname="imu" name="global_angvel"/>
+    <framepos objtype="site" objname="imu" name="position"/>
+    <framequat objtype="site" objname="imu" name="orientation"/>
+
+    <framelinvel objtype="site" objname="l_foot" name="l_foot_global_linvel"/>
+    <framelinvel objtype="site" objname="r_foot" name="r_foot_global_linvel"/>
+    <framexaxis objtype="site" objname="l_foot" name="l_foot_upvector"/>
+    <framexaxis objtype="site" objname="r_foot" name="r_foot_upvector"/>
+    <framepos objtype="site" objname="l_foot" name="l_foot_pos"/>
+    <framepos objtype="site" objname="r_foot" name="r_foot_pos"/>
+  </sensor>
+``` 
+
+* Es werden später für die policy nicht alle Werte verwendet. Aber alle Werte werden für das Training an sich benötigt
+* `priviled_state` sind die Daten die fürs Training benötigt werden
+  
+```
+privileged_state = jp.hstack([
+        state,
+        gyro,  # 3
+        accelerometer,  # 3
+        gravity,  # 3
+        linvel,  # 3
+        global_angvel,  # 3
+        joint_angles - self._default_pose,
+        joint_vel,
+        root_height,  # 1
+        data.actuator_force,  # 12
+        contact,  # 2
+        feet_vel,  # 4*3
+        info["feet_air_time"],  # 2
+    ])
+```
+
+* `state` sind die Daten, die für die Policy benötigt werden
+```
+state = jp.hstack([
+        noisy_linvel,  # 3
+        noisy_gyro,  # 3
+        noisy_gravity,  # 3
+        info["command"],  # 3
+        noisy_joint_angles - self._default_pose,  # 12
+        noisy_joint_vel,  # 12
+        info["last_act"],  # 12
+        phase,
+    ])
 ```
 
 -----

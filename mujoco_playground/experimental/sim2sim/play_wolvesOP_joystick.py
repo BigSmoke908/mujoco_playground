@@ -86,6 +86,8 @@ class OnnxController:
     return obs.astype(np.float32)
 
   def get_control(self, model: mujoco.MjModel, data: mujoco.MjData) -> None:
+    global sensor_addr
+    
     self._counter += 1
     if self._counter % self._n_substeps == 0:
       obs = self.get_obs(model, data)

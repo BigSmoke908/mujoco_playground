@@ -14,7 +14,7 @@
  - komplette Installation verifizieren: `python -c "import mujoco_playground"`  (sollte ohne Fehler durchlaufen)
 
 
-## Mujoco-Simulation öffnen
+## Mujoco-Viewer öffnen
 > Hierfür muss Mujoco installiert sein. Am einfachsten geht das, indem man die obige Installationanleitung für den Playground befolgt.
 
  - `cd mujoco_playground`, in den lokalen Projekt-Clon wechseln
@@ -22,7 +22,7 @@
  - `python`, Python-Interpreter starten
  - `import mujoco.viewer as m`, Mujoco Viewer Modul importieren
  - `m.launch()`  -> ein Fenster mit der Mujoco-Simulation öffnet sich
- - Nun kann man verschiedene Umgebungen laden in dem man diese ins Fenster zieht
+ - per Drag-And-Drop können jetzt Mujoco-Umgebungen geladen werden
 
 
 ## Training
@@ -50,6 +50,8 @@
 
 
 ## Weiterführende Dokumentationen
+
+> In diesen wird jeweils eine fertig eingerichtete Mujoco-Playground-Umgebung vorausgesetzt
 
 Detaillierte Informationen zu den vorgenommenen Anpassungen und der Portierung der Umgebung befinden sich hier:
 

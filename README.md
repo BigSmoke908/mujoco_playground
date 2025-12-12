@@ -55,6 +55,7 @@
 
 Detaillierte Informationen zu den vorgenommenen Anpassungen und der Portierung der Umgebung befinden sich hier:
 
-* [Environment Documentation](Environment_Albaraa.md) – Beschreibt die Erstellung der `WolvesOP`-Umgebung, Anpassungen an den Python-Skripten,Hintergründe zu den Asset-Pfaden und Integration & Registrierung.
+* [Environment Documentation](./docs/Environment_Albaraa.md) – Beschreibt die Erstellung der `WolvesOP`-Umgebung, Anpassungen an den Python-Skripten,Hintergründe zu den Asset-Pfaden und Integration & Registrierung.
 
+* [Mujoco-Model Documentation](./docs/mujoco_model_documentation.md) - Beschreibt die Erstellung von Mujoco-Modellen aus URDF-Modellen
 

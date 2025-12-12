@@ -165,6 +165,23 @@ Außerdem müssen neben den Meshes für die Fußplatten je eine `site`-platziert
 ```
 
 
+#### Actuator-Klassen anwenden
+
+Die vorher definierten Actuator-Klassen müssen für das gesamte Modell verwendet werden. Das kann erreicht werden, in dem jeweils das Startelement der verschiedenen Extremitäten diese als `childclass`-erhalten, sodass die Actuator-Klasse für alle Joints angewendet wird:
+
+Vorher
+```xml
+<body name="HN05-N101_v1__18__1" pos="0.059842 -0.008192 -0.1063">
+```
+
+Nachher
+```xml
+<body childclass="mx106" name="HN05-N101_v1__18__1" pos="0.059842 -0.008192 -0.1063">
+```
+
+(Dieser Teil kann nur teilweise auf einen anderen Roboter angewendet werden, da davon ausgegangen wird, dass alle Joints in einer Extremität den gleichen Servo-Typen verwenden)
+
+
 #### Joint Konfiguration
 
 Der Einfachheit halber wurden die Joint-Namen aus dem Basisprojekt in die XML übernommen. Daher müssen alle Joints in den Beinen wie folgt umbenannt werden:

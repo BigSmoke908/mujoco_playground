@@ -86,7 +86,7 @@ class OnnxController:
     return obs.astype(np.float32)
 
   def get_control(self, model: mujoco.MjModel, data: mujoco.MjData) -> None:
-    global sensor_addr
+    global sensor_addr, x, default_angles, action_scale
     
     self._counter += 1
     if self._counter % self._n_substeps == 0:
@@ -102,7 +102,9 @@ class OnnxController:
       observations.append(obs)
 
       get_joint_positions(model, data)
-      print(f"[LOG!!!!!] {type(model)}")
+      x = f"{self._default_angles}"
+      default_angles = self._default_angles
+      action_scale = self._action_scale
       
       if not sensor_addr:
         sensor_addr = get_actuated_joint_names(model)
@@ -120,7 +122,7 @@ def load_callback(model=None, data=None):
 
   mujoco.mj_resetDataKeyframe(model, data, 1)
 
-  ctrl_dt = 0.02
+  ctrl_dt = 0.005
   sim_dt = 0.002
   n_substeps = int(round(ctrl_dt / sim_dt))
   model.opt.timestep = sim_dt
@@ -152,33 +154,38 @@ def get_actuated_joint_names(model) -> list[str]:
   return joint_names
 
 
-def get_joint_positions(model, data):
-  global jnts
-
-  j = []
-  for joint in range(model.njnt):
-    j.append(data.joint(joint).qpos)
-  jnts.append(j)
+def get_joint_positions(model: mujoco.MjModel, data: mujoco.MjData):
+  return [
+    data.qpos[model.jnt_qposadr[j]]
+    for j in range(model.njnt)
+  ]
 
 
 actions = []
 observations = []
 sensor_addr = []
 jnts = []
+default_angles = None
+action_scale = None
+x = ""
 
 
 if __name__ == "__main__":
   viewer.launch(loader=load_callback)
-  print(len(jnts))
-  print(jnts[0])
+  # print(len(jnts))
+  # print(jnts[0])
   
   import json
 
-  # open('act.json', 'w+').write(json.dumps([[float(x) for x in l] for l in actions]))
+  open('act.json', 'w+').write(json.dumps([[float(x) for x in l] for l in actions]))
   # open('obs.json', 'w+').write(json.dumps([[float(x) for x in l] for l in observations]))
-  # open('joint_names.json', 'w+').write(json.dumps(sensor_addr))
+  open('joint_names.json', 'w+').write(json.dumps(sensor_addr))
+  open('x.txt', '+w').write(x)
+  open('default_angles.json', 'w+').write(json.dumps(list(default_angles)))
+  print(action_scale)
+  open('action_scale.json', 'w+').write(json.dumps(list(action_scale)))
   # print(jnts[0].shape)
-  open('jnts.json', '+w').write(json.dumps([[[float(y) for y in x] for x in l] for l in jnts]))
+  # open('jnts.json', '+w').write(json.dumps([[[float(y) for y in x] for x in l] for l in jnts]))
   
 
 

@@ -289,7 +289,7 @@ Die Konfiguration Aufbereitung des eigentlichen Roboter Modells ist damit abgesc
 
 ### Komposition (Scene XML): Einbettung des Roboter-MOdells in eine Umgebung mit Boden
 
-Bei dem Training wird nicht das eigentliche Roboter-Modell (`wolvesop_mjx_feetonly.xml`) geladen, sondern eine Szene verwendet welche dieses Modell beinhaltet. Für das normale Training verwenden wir hier die [`scene_mjx_feetonly_flat_terrain.xml](../mujoco_playground/_src/locomotion/wolves_op/xmls/scene_mjx_feetonly_flat_terrain.xml). Diese ist bis auf wenige Änderungen vollständig aus dem Basis-Environment übernommen # TODO hier auf Environment-Doku verlinken.
+Bei dem Training wird nicht das eigentliche Roboter-Modell (`wolvesop_mjx_feetonly.xml`) geladen, sondern eine Szene verwendet welche dieses Modell beinhaltet. Für das normale Training verwenden wir hier die [`scene_mjx_feetonly_flat_terrain.xml](../mujoco_playground/_src/locomotion/wolves_op/xmls/scene_mjx_feetonly_flat_terrain.xml). Diese ist bis auf wenige Änderungen vollständig aus dem [Basis-Environment](./mujoco_environment.md) übernommen.
 
 Die einzigen vorgenommenen Änderungen sind hier die inkludierte Datei `<include file="wolvesop_mjx_feetonly.xml" />` und der zu Beginn des Trainings geladene `key`, über welchen die Startpositionen der Servos eingestellt werden:
 

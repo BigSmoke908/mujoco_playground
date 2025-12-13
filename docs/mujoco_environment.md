@@ -1,11 +1,9 @@
 # Documentation: WolvesOP Environment
 
 # Basis:
- - Das Environment von WolvesOP basiert auf einer Kopie des Wolfgang Environments.
- - Da wir entsprechend den Namen unseres neuen Environments geändert haben, mussten in allen Dateien die Imports und Verweise auf Dateien des Environment geändert werden, damit diese wieder korrekt zueinander passen
+ - das Environment von WolvesOP basiert auf einer Kopie des Wolfgang Environments aus dem [Basisprojekt](https://github.com/bit-bots/mujoco_playground#)
+ - da die Dateien innerhalb von dem Environment nach dem Environment benannt sind, sind folgende Umbenennungen nötig:
 
- Konkret haben wir diese Dateien angepasst:
- - locomotion/ _init_.py -> neues Environment in _envs, _cfgs, _randomizer einfügen
  - wolves_op/ base.py -> imports, def get_assets()
  - wolves_op/ convert_folder.py -> vollständig selber erstellt
  - wolves_op/ demo.py -> ???
@@ -41,14 +39,6 @@
 | LL_FFE / LR_FFE | Fuß Flexion/Extension (Plantar-/Dorsalflexion)| Bewegung des Fußes nach unten/oben (Knöchel-Bewegung)             |
 | LL_FAA / LR_FAA | Fuß Adduktion/Abduktion (Inversion/Eversion) | Seitwärtsbewegung des Fußes (nach innen/außen kippen)             |
 
-
-
-
-# Vorgehensweise bei Anpassungen:
- - Training starten und entstehende Fehlermeldungen prüfen.
- - Bezeichner in der XML oder im Environment so anpassen, dass sie zueinander passen.
- - Wiederhole bis es funktioniert xD
- - Die meisten Anpassungen betreffen die Dateien 'wolvesop_constants' und 'Joystick.py'.
 
 -----
 -----

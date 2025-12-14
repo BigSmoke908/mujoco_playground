@@ -1,5 +1,38 @@
 # Dokumentation zur Livedemo
 
+## Quick Guide (Kurzstart)
+
+Dieser Abschnitt beschreibt die minimal notwendigen Schritte, um die Livedemo **direkt aus dem Projekt-Root** zu starten.
+
+### Voraussetzungen
+
+* Aktives Python-Environment mit installierten Projekt-Abhängigkeiten
+  (z. B. via `venv`, `conda` oder Projekt-Setup-Skript)
+* Vorhandene ONNX-Datei im vorgesehenen Ordner
+
+### Schritte
+
+1. **Environment aktivieren** (Beispiel):
+
+```bash
+source .venv/bin/activate
+```
+
+2. **Aus dem Projekt-Root starten**:
+
+```bash
+python mujoco_playground/experimental/sim2sim/play_wolvesOP_joystick.py
+```
+
+3. **Steuerung**:
+
+* W / A / S / D zur Bewegung
+* MuJoCo-Fenster muss fokussiert sein
+
+Nach dem Start öffnet sich der MuJoCo-Viewer und das Modell kann interaktiv gesteuert werden.
+
+---
+
 ## 1. Ziel der Livedemo
 
 Ziel der Livedemo ist es, das trainierte Modell interaktiv vorzuführen. Die Demo basiert auf einer bereits existierenden Livedemo für ein ähnliches Modell und wurde so angepasst, dass sie mit unserem Modell kompatibel ist.

@@ -60,3 +60,5 @@ Detaillierte Informationen zu den vorgenommenen Anpassungen und der Portierung d
 
 * [Mujoco-Model Documentation](./docs/mujoco_model_documentation.md) - Beschreibt die Erstellung von Mujoco-Modellen aus URDF-Modellen
 
+* [ONNX-Generierung](./docs/create_onnx.md) - Beschreibt die Erzeugung einer ONNX für die spätere Ausführung der Policy
+

@@ -6,8 +6,7 @@ Dieser Abschnitt beschreibt die minimal notwendigen Schritte, um die Livedemo **
 
 ### Voraussetzungen
 
-* Aktives Python-Environment mit installierten Projekt-Abhängigkeiten
-  (z. B. via `venv`, `conda` oder Projekt-Setup-Skript)
+* Aktives Python-Environment mit installierten Projekt-Abhängigkeiten (z. B. via `venv`, `conda` oder Projekt-Setup-Skript)
 * Vorhandene ONNX-Datei im vorgesehenen Ordner
 
 ### Schritte
@@ -18,7 +17,7 @@ Dieser Abschnitt beschreibt die minimal notwendigen Schritte, um die Livedemo **
 source .venv/bin/activate
 ```
 
-2. **Aus dem Projekt-Root starten**:
+2. **Livedemo starten**:
 
 ```bash
 python mujoco_playground/experimental/sim2sim/play_wolvesOP_joystick.py
@@ -26,7 +25,9 @@ python mujoco_playground/experimental/sim2sim/play_wolvesOP_joystick.py
 
 3. **Steuerung**:
 
-* W / A / S / D / Q / E / Space zur Bewegung
+* W / A / S / D – Bewegung
+* Q / E – Rotation
+* Space – Reset
 * MuJoCo-Fenster muss fokussiert sein
 
 Nach dem Start öffnet sich der MuJoCo-Viewer und das Modell kann interaktiv gesteuert werden.
@@ -35,12 +36,11 @@ Nach dem Start öffnet sich der MuJoCo-Viewer und das Modell kann interaktiv ges
 
 ## 1. Ziel der Livedemo
 
-Ziel der Livedemo ist es, das trainierte Modell interaktiv vorzuführen. Die Demo basiert auf einer bereits existierenden Livedemo für ein ähnliches Modell und wurde so angepasst, dass sie mit unserem Modell kompatibel ist.
-Die Demo nutzt ein **ONNX-Modell** und wird während der Laufzeit über die **Konsole mit den Tasten W, A, S, D** gesteuert.
+Ziel der Livedemo ist es, das trainierte Modell interaktiv vorzuführen. Die Demo basiert auf einer bestehenden Livedemo für ein ähnliches Modell und wurde so angepasst, dass sie mit dem aktuellen Modell kompatibel ist. Die Steuerung erfolgt während der Laufzeit über die Tastatur (W, A, S, D, Q, E).
 
 ---
 
-## 2. Ausgangsbasis der Livedemo
+## 2. Ausgangsbasis
 
 Als Grundlage diente eine bestehende Livedemo aus folgendem Repository:
 
@@ -48,87 +48,62 @@ Als Grundlage diente eine bestehende Livedemo aus folgendem Repository:
 
 Die ursprüngliche Demo enthielt bereits:
 
-* eine Konsolenanwendung,
-* die Einbindung eines ONNX-Modells,
-* eine einfache Tastatursteuerung (W, A, S, D).
+* Konsolenanwendung
+* Einbindung eines ONNX-Modells
+* Einfache Tastatursteuerung
 
-Diese Demo wurde **kopiert** und als Basis für unser Modell verwendet. Alle Änderungen wurden innerhalb des Livedemo-Verzeichnisses vorgenommen, sodass der ursprüngliche Code unverändert erhalten bleibt.
+Die Datei wurde kopiert und für das neue Modell angepasst. Der Originalcode bleibt unverändert erhalten.
 
 ---
 
-## 3. Vorbereitung: ONNX-Modell erstellen und ablegen
+## 3. Vorbereitung: ONNX-Modell
 
-### 3.1 Konvertierung des Modells nach ONNX
+### 3.1 Konvertierung nach ONNX
 
-Das trainierte Modell muss zunächst in das ONNX-Format konvertiert werden.
-
-Eine Anleitung zur ONNX-Konvertierung findet sich hier:
+Das trainierte Modell muss zunächst in das ONNX-Format konvertiert werden. Eine Anleitung befindet sich hier:
 
 * [create_onnx.md](docs/create_onnx.md)
 
-Das Ergebnis der Konvertierung ist eine Datei:
+Das Ergebnis ist eine ONNX-Datei:
 
 [wolves_op_policy.onnx](mujoco_playground/experimental/sim2sim/onnx/wolves_op_policy.onnx)
 
 ### 3.2 Ablage der ONNX-Datei
 
-Die erzeugte ONNX-Datei muss im folgenden Verzeichnis abgelegt werden:
+Die ONNX-Datei muss im folgenden Verzeichnis liegen:
 
 ```
 mujoco_playground/
-├── experimental/
-│   └── sim2sim
-│       └── onnx
-|           └── wolves_op_policy.onnx
+└── experimental/
+    └── sim2sim/
+        └── onnx/
+            └── wolves_op_policy.onnx
 ```
 
-Der Dateiname und Pfad werden im Livedemo-Skript referenziert.
+Der Pfad wird relativ zur Startdatei aufgelöst.
 
 ---
 
-## 4. Anpassungen an der Livedemo
+## 4. Aufbau der Livedemo
 
-Die Livedemo basiert auf einer bestehenden Demo-Datei, die ursprünglich für das **wolvesOP-Humanoid-Modell** entwickelt wurde und bereits eine ONNX-Policy in MuJoCo ausführt.
+### 4.1 Laden der ONNX-Datei
 
-Die relevante Demo-Datei ist:
-
-
-[play_wolfgang_joystick.py](mujoco_playground/experimental/sim2sim/play_wolfgang_joystick.py)
-
-Der vollständige Ablauf und die notwendigen Anpassungen werden im Folgenden anhand dieser Datei erläutert.
-
----
-
-### 4.1 Ablage der ONNX-Datei
-
-Die Demo erwartet die ONNX-Datei relativ zum Speicherort der Demo-Datei:
+Der Speicherort der ONNX-Datei wird relativ zur Demo-Datei bestimmt:
 
 ```python
 _HERE = epath.Path(__file__).parent
 _ONNX_DIR = _HERE / "onnx"
 ```
 
-Daraus ergibt sich folgende notwendige Ordnerstruktur:
-
-```
-experimental/sim2sim/
-├── play_wolvesOP_joystick.py
-└── onnx/
-    └── wolves_op_policy.onnx
-```
-
-Für ein eigenes Modell muss:
-
-* die ONNX-Datei in den Ordner `onnx/` gelegt werden
-* der Dateiname im Code angepasst werden, z. B.:
+Der Dateiname kann im Code angepasst werden:
 
 ```python
-policy_path=(_ONNX_DIR / "model.onnx").as_posix()
+policy_path = (_ONNX_DIR / "model.onnx").as_posix()
 ```
 
 ---
 
-### 4.2 Anpassung der Beobachtungen (Input des Modells)
+### 4.2 Beobachtungen (Modelleingang)
 
 Die Methode `get_obs(...)` erzeugt den Eingabevektor für das ONNX-Modell:
 
@@ -144,45 +119,32 @@ obs = np.hstack([
 ])
 ```
 
-**Wichtig:**
-
-* Die Reihenfolge und Dimensionen müssen exakt mit dem beim Training verwendeten Beobachtungsraum übereinstimmen.
-* Für ein eigenes Modell ist diese Methode der **zentrale Anpassungspunkt**.
-
-Typische Anpassungen:
-
-* Entfernen oder Hinzufügen von Sensorwerten
-* Anpassen der Anzahl von Gelenken
-* Änderung der Kommandostruktur
+Der Aufbau muss dem Beobachtungsraum des trainierten Modells entsprechen.
 
 ---
 
-### 4.3 Anpassung der Modellausgabe (Actions)
+### 4.3 Aktionen (Modellausgang)
 
-Die Inferenz erfolgt in `get_control(...)`:
+Die Kommunikation erfolgt in `get_control(...)`:
 
 ```python
 onnx_input = {"obs": obs.reshape(1, -1)}
 onnx_pred = self._policy.run(self._output_names, onnx_input)[0][0]
 ```
 
-Die Ausgabe wird anschließend direkt als Steuerkommando verwendet:
+Die Ausgabe wird als Steuerkommando verwendet:
 
 ```python
 data.ctrl[:] = onnx_pred * self._action_scale + self._default_angles
 ```
 
-Für andere Modelle kann hier notwendig sein:
-
-* Skalierung der Aktionen anzupassen
-* Offsets zu entfernen oder zu ändern
-* Aktionen auf andere Aktuatoren zu mappen
+Je nach Modell können hier Skalierung, Offsets oder Aktuator-Zuordnung angepasst werden.
 
 ---
 
-### 4.4 Tastatursteuerung (WASD)
+### 4.4 Tastatursteuerung
 
-Die Tastatureingaben werden über folgende Klasse verarbeitet:
+Die Tastatureingaben werden über einen `KeyboardGamepad` verarbeitet:
 
 ```python
 self._joystick = KeyboardGamepad(
@@ -192,23 +154,23 @@ self._joystick = KeyboardGamepad(
 )
 ```
 
-Die eigentlichen WASD-Eingaben werden in:
+Die daraus resultierenden Kommandos fließen als Teil der Beobachtung in das Modell ein:
 
 ```python
 command = self._joystick.get_command()
 ```
 
-abgerufen und sind Teil des Beobachtungsvektors.
-
 ---
 
-### 4.5 MuJoCo-Initialisierung und Control-Callback
+### 4.5 MuJoCo-Initialisierung
 
-Die Funktion `load_callback(...)`:
+Beim Start werden:
 
-* lädt das MuJoCo-Modell (XML + Assets)
-* initialisiert Simulation und Zeitschritte
-* registriert den Controller als Callback
+* das MuJoCo-Modell (XML + Assets)
+* die Simulation
+* die ONNX-Policy
+
+initialisiert. Der Controller wird als Callback registriert:
 
 ```python
 mujoco.set_mjcb_control(policy.get_control)
@@ -218,107 +180,44 @@ Damit wird bei jedem Simulationsschritt die Policy ausgeführt.
 
 ---
 
-## 5. Steuerung der Livedemo
+## 5. Start der Livedemo
 
-### 5.1 Tastaturbelegung
-
-Die Steuerung erfolgt über die Konsole mit folgender Belegung:
-
-* **W** – Bewegung nach vorne
-* **A** – Bewegung nach links
-* **S** – Bewegung nach hinten
-* **D** – Bewegung nach rechts
-* **Q** - Drehung nach links
-* **E** - Drehung nach rechts
-
-Die Tastatureingaben werden in einer Schleife abgefragt und direkt auf den aktuellen Zustand angewendet.
-
----
-
-## 6. Starten der Livedemo
-
-Die **Startdatei der Livedemo** ist das folgende Python-Skript:
-
-[play_wolvesOP_joystick.py]([play_wolfgang_joystick.py](mujoco_playground/experimental/sim2sim/play_wolvesOP_joystick.py)
-
-Diese Datei enthält sowohl:
-
-* die Initialisierung der MuJoCo-Simulation
-* als auch die Einbindung und Ausführung der ONNX-Policy
-
-### 6.1 Erwartete Projektstruktur
-
-Damit die Livedemo ohne weitere Anpassungen gestartet werden kann, muss folgende Ordnerstruktur eingehalten werden:
-
-```
-experimental/sim2sim/
-├── play_wolvesOP_joystick.py
-└── onnx/
-    └── wolves_op_policy.onnx
-```
-
-Der Ordner `onnx/` wird relativ zum Speicherort der Startdatei aufgelöst:
-
-```python
-_HERE = epath.Path(__file__).parent
-_ONNX_DIR = _HERE / "onnx"
-```
-
----
-
-### 6.2 Start der Simulation
-
-Die Simulation wird direkt über die Startdatei ausgeführt:
+Die Simulation wird über folgende Datei gestartet:
 
 ```
 python experimental/sim2sim/play_wolvesOP_joystick.py
 ```
 
-Beim Start werden automatisch:
-
-1. das MuJoCo-Modell (`wolvesOP_constants.FEET_ONLY_FLAT_TERRAIN_XML`)
-2. die zugehörigen Assets
-3. die ONNX-Policy (`wolvesOP_policy.onnx`)
-4. der Control-Callback (`OnnxController.get_control`)
-
-initialisiert.
-
-Anschließend öffnet sich der MuJoCo-Viewer und die Livedemo kann über die Tastatur gesteuert werden.
+Nach dem Start öffnet sich der MuJoCo-Viewer und das Modell kann interaktiv gesteuert werden.
 
 ---
 
-### 6.3 Anpassung für ein eigenes Modell
+## 6. Anpassung für eigene Modelle
 
-Um ein eigenes Modell zu verwenden, müssen mindestens folgende Stellen in der Startdatei angepasst werden:
+Für ein eigenes Modell müssen in der Startdatei mindestens folgende Punkte angepasst werden:
 
 1. **ONNX-Dateiname**
-
-```python
-policy_path=(_ONNX_DIR / "wolvesOP_policy.onnx").as_posix()
-```
-
-2. **Beobachtungsraum** in `OnnxController.get_obs(...)`
-
+2. **Beobachtungsraum** in `get_obs(...)`
 3. **Aktionsinterpretation** in `get_control(...)`
 
-Die restliche Struktur der Startdatei kann unverändert übernommen werden.
+Die restliche Struktur kann unverändert übernommen werden.
 
 ---
 
 ## 7. Voraussetzungen
 
 * Python-Umgebung mit ONNX Runtime
-* Vorhandene ONNX-Modell-Datei im Verzeichnis `models/`
-* Zugriff auf die Konsole
+* Vorhandene ONNX-Modell-Datei im angegebenen Verzeichnis
+* Tastaturfokus auf dem MuJoCo-Fenster
 
 ---
 
-## 8. Bekannte Einschränkungen
+## 8. Einschränkungen
 
-* Die Demo ist primär für Vorführzwecke gedacht.
+* Die Demo ist primär für Vorführ- und Testzwecke gedacht.
 
 ---
 
 ## 9. Zusammenfassung
 
-Die Livedemo wurde auf Basis einer bestehenden Implementierung erstellt und gezielt an unser trainiertes ONNX-Modell angepasst. Durch klare Ablagepfade, minimale Codeänderungen und eine einfache Konsolensteuerung kann die Demo mit geringem Aufwand reproduziert und erweitert werden.
+Die Livedemo ermöglicht eine interaktive Vorführung eines trainierten ONNX-Modells in MuJoCo. Durch klare Ordnerstrukturen, eine einfache Tastatursteuerung und minimale Anpassungen lässt sich die Demo leicht reproduzieren und auf andere Modelle übertragen.

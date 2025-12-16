@@ -1,6 +1,6 @@
-# Doku für Jaywalker-Mujoco-Playground Adaptation
+# Doku für Jaywalker-Mujoco-Playground Adaption
 
-## Entwicklungsumgebung einrichten/Sachen die wir auf dem Server machen mussten
+## Entwicklungsumgebung einrichten
 
  - [uv](https://docs.astral.sh/uv/getting-started/installation/) installieren
  - ssh-Key für den Zugriff auf Github (läuft aktuell auf Privataccount) eingerichtet
@@ -15,7 +15,7 @@
 
 
 ## Mujoco-Viewer öffnen
-> Hierfür muss Mujoco installiert sein. Am einfachsten geht das, indem man die obige Installationanleitung für den Playground befolgt.
+> Hierfür muss Mujoco installiert sein. Am einfachsten geht das, indem man die [Installationanleitung für den Playground](README.md#entwicklungsumgebung-einrichten) befolgt.
 
  - `cd mujoco_playground`, in den lokalen Projekt-Clon wechseln
  - `source .venv/bin/activate`, die lokale Python Umgebung aktivieren
@@ -40,7 +40,7 @@
 
  - `--help`, Liste mit allen Parametern + Erklärung ausgeben
  - `--domain_randomization=false`, Domain-Randomization togglen
- - `--num_timesteps=150000000`, wie viele Episoden(?) sollen trainiert werden -> grobes Maß für wie lange trainiert werden soll
+ - `--num_timesteps=150000000`, wie viele Episoden sollen trainiert werden -> grobes Maß für wie lange trainiert werden soll
  - `--load_checkpoint_path={path}`, Skript mit einem bestimmten Trainingsstand laden, um das Training fortzusetzen, `--num_timesteps`sollte dann aber neugesetzt werden
     - Beispiel: `--load_checkpoint_path logs/WolvesOPJoystickFlatTerrain-20251104-075648/checkpoints --num_timesteps=200000000`
  - `--play_only=true`, es wird kein Training ausgeführt sondern nur ein Video erstellt, vom letzten Trainingsstand (oder von einem bestimmten wenn `--load_checkpoint_path` gesetzt ist)
@@ -50,7 +50,7 @@
 
 
 
-## Weiterführende Dokumentationen
+## Weiterführende Dokumentation
 
 > In diesen wird jeweils eine fertig eingerichtete Mujoco-Playground-Umgebung vorausgesetzt
 

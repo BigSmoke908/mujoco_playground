@@ -68,9 +68,7 @@ Eine Anleitung zur ONNX-Konvertierung findet sich hier:
 
 Das Ergebnis der Konvertierung ist eine Datei:
 
-```
-wolves_op_policy.onnx
-```
+[wolves_op_policy.onnx](mujoco_playground/experimental/sim2sim/onnx/wolves_op_policy.onnx)
 
 ### 3.2 Ablage der ONNX-Datei
 

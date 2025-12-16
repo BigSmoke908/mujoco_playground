@@ -26,7 +26,7 @@ python mujoco_playground/experimental/sim2sim/play_wolvesOP_joystick.py
 
 3. **Steuerung**:
 
-* W / A / S / D zur Bewegung
+* W / A / S / D / Q / E / Space zur Bewegung
 * MuJoCo-Fenster muss fokussiert sein
 
 Nach dem Start öffnet sich der MuJoCo-Viewer und das Modell kann interaktiv gesteuert werden.
@@ -44,7 +44,7 @@ Die Demo nutzt ein **ONNX-Modell** und wird während der Laufzeit über die **Ko
 
 Als Grundlage diente eine bestehende Livedemo aus folgendem Repository:
 
-> **Quelle:** *mujoco_playground/experimental/sim2sim/play_wolfgang_joystick.py*
+> **Quelle:** [play_wolfgang_joystick.py](mujoco_playground/experimental/sim2sim/play_wolfgang_joystick.py)
 
 Die ursprüngliche Demo enthielt bereits:
 
@@ -64,7 +64,7 @@ Das trainierte Modell muss zunächst in das ONNX-Format konvertiert werden.
 
 Eine Anleitung zur ONNX-Konvertierung findet sich hier:
 
-* docs/create_onnx.md
+* [create_onnx.md](docs/create_onnx.md)
 
 Das Ergebnis der Konvertierung ist eine Datei:
 
@@ -94,9 +94,8 @@ Die Livedemo basiert auf einer bestehenden Demo-Datei, die ursprünglich für da
 
 Die relevante Demo-Datei ist:
 
-```
-play_wolfgang_joystick.py
-```
+
+[play_wolfgang_joystick.py](mujoco_playground/experimental/sim2sim/play_wolfgang_joystick.py)
 
 Der vollständige Ablauf und die notwendigen Anpassungen werden im Folgenden anhand dieser Datei erläutert.
 
@@ -131,40 +130,7 @@ policy_path=(_ONNX_DIR / "model.onnx").as_posix()
 
 ---
 
-### 4.2 Herkunft der ursprünglichen Demo
-
-Die Datei stammt aus dem *MuJoCo Playground* und dient als Referenzimplementierung für das Deployen einer ONNX-Policy in MuJoCo:
-
-* Nutzung von `onnxruntime` zur Inferenz
-* Kopplung der Policy an den MuJoCo-Control-Callback
-* Interaktion über Tastatur mittels `KeyboardGamepad`
-
-Diese Datei wurde **kopiert** und anschließend angepasst. Die Kernstruktur (Controller-Klasse, Callback-Mechanismus) blieb erhalten.
-
----
-
-### 4.3 Zentrale Klasse: `OnnxController`
-
-Die Klasse `OnnxController` kapselt die komplette Logik zur:
-
-* Initialisierung der ONNX-Policy
-* Erzeugung der Beobachtungen (`get_obs`)
-* Ausführung der Inferenz
-* Übergabe der Aktionen an MuJoCo
-
-#### Initialisierung der Policy
-
-```python
-self._policy = rt.InferenceSession(
-    policy_path, providers=["CPUExecutionProvider"]
-)
-```
-
-Hier wird das ONNX-Modell geladen. Für andere Modelle ist lediglich der Pfad anzupassen.
-
----
-
-### 4.4 Anpassung der Beobachtungen (Input des Modells)
+### 4.2 Anpassung der Beobachtungen (Input des Modells)
 
 Die Methode `get_obs(...)` erzeugt den Eingabevektor für das ONNX-Modell:
 
@@ -193,7 +159,7 @@ Typische Anpassungen:
 
 ---
 
-### 4.5 Anpassung der Modellausgabe (Actions)
+### 4.3 Anpassung der Modellausgabe (Actions)
 
 Die Inferenz erfolgt in `get_control(...)`:
 
@@ -216,7 +182,7 @@ Für andere Modelle kann hier notwendig sein:
 
 ---
 
-### 4.6 Tastatursteuerung (WASD)
+### 4.4 Tastatursteuerung (WASD)
 
 Die Tastatureingaben werden über folgende Klasse verarbeitet:
 
@@ -238,7 +204,7 @@ abgerufen und sind Teil des Beobachtungsvektors.
 
 ---
 
-### 4.7 MuJoCo-Initialisierung und Control-Callback
+### 4.5 MuJoCo-Initialisierung und Control-Callback
 
 Die Funktion `load_callback(...)`:
 
@@ -261,9 +227,11 @@ Damit wird bei jedem Simulationsschritt die Policy ausgeführt.
 Die Steuerung erfolgt über die Konsole mit folgender Belegung:
 
 * **W** – Bewegung nach vorne
-* **A** – Drehung nach links
+* **A** – Bewegung nach links
 * **S** – Bewegung nach hinten
-* **D** – Drehung nach rechts
+* **D** – Bewegung nach rechts
+* **Q** - Drehung nach links
+* **E** - Drehung nach rechts
 
 Die Tastatureingaben werden in einer Schleife abgefragt und direkt auf den aktuellen Zustand angewendet.
 
@@ -273,9 +241,7 @@ Die Tastatureingaben werden in einer Schleife abgefragt und direkt auf den aktue
 
 Die **Startdatei der Livedemo** ist das folgende Python-Skript:
 
-```
-play_wolvesOP_joystick.py
-```
+[play_wolvesOP_joystick.py]([play_wolfgang_joystick.py](mujoco_playground/experimental/sim2sim/play_wolvesOP_joystick.py)
 
 Diese Datei enthält sowohl:
 
@@ -352,7 +318,6 @@ Die restliche Struktur der Startdatei kann unverändert übernommen werden.
 ## 8. Bekannte Einschränkungen
 
 * Die Demo ist primär für Vorführzwecke gedacht.
-* Fehlerbehandlung und Performance-Optimierung sind bewusst minimal gehalten.
 
 ---
 

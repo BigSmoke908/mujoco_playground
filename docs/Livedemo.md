@@ -28,7 +28,7 @@ python mujoco_playground/experimental/sim2sim/play_wolvesOP_joystick.py
 * W / A / S / D – Bewegung
 * Q / E – Rotation
 * Space – Reset
-* MuJoCo-Fenster muss fokussiert sein
+* die Konsole muss fokussiert sein
 
 Nach dem Start öffnet sich der MuJoCo-Viewer und das Modell kann interaktiv gesteuert werden.
 
@@ -208,7 +208,6 @@ Die restliche Struktur kann unverändert übernommen werden.
 
 * Python-Umgebung mit ONNX Runtime
 * Vorhandene ONNX-Modell-Datei im angegebenen Verzeichnis
-* Tastaturfokus auf dem MuJoCo-Fenster
 
 ---
 

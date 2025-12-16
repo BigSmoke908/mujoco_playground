@@ -31,9 +31,10 @@
  - `cd mujoco_playground`  -> hier den lokalen Clon vom Repository wechseln
  - `source ./venv/activate`,  um die lokale Python Umgebung zu aktivieren (muss pro Terminal-Session nur einmal durchgeführt werden)
  - `python learning/train_jax_ppo.py --env_name=WolvesOPJoystickFlatTerrain`, Standardaufruf für das Training
+ - das Ergebnis von dem Training kann in dem [logs/](./logs/) Ordern gefunden werden. Hier befindet sich je nach Trainingsparametern auch die generierte [ONNX-Datei](./docs/create_onnx.md#als-teil-vom-training)
 
 
-### einige Optionale Trainingsparameter
+### einige optionale Trainingsparameter
 
 > Parameter sind über `flags.DEFINE_...`-Aufrufe in [train_jax_ppo.py](./learning/train_jax_ppo.py) definiert.
 
@@ -45,7 +46,7 @@
  - `--play_only=true`, es wird kein Training ausgeführt sondern nur ein Video erstellt, vom letzten Trainingsstand (oder von einem bestimmten wenn `--load_checkpoint_path` gesetzt ist)
  - `--use_tb=true`, Loggingdirectory für Tensorboard erstellen
  - `--num_evals=10`, wie viele Zwischenstände sollen während dem Training gespeichert werden
-
+ - `--model=model`, in dem angegebenen Ordner befindet sich die generierte [ONNX-Datei](./docs/create_onnx.md)
 
 
 
@@ -55,7 +56,9 @@
 
 Detaillierte Informationen zu den vorgenommenen Anpassungen und der Portierung der Umgebung befinden sich hier:
 
-* [Environment Documentation](./docs/Environment_Albaraa.md) – Beschreibt die Erstellung der `WolvesOP`-Umgebung, Anpassungen an den Python-Skripten,Hintergründe zu den Asset-Pfaden und Integration & Registrierung.
+* [Environment Documentation](./docs/mujoco_environment.md) – Beschreibt den generellen Aufbau von `Mujoco-Environments`, sowie die Erstellung des [`wolvesop-Environemts`](./mujoco_playground/_src/locomotion/wolves_op/)
 
 * [Mujoco-Model Documentation](./docs/mujoco_model_documentation.md) - Beschreibt die Erstellung von Mujoco-Modellen aus URDF-Modellen
+
+* [ONNX-Generierung](./docs/create_onnx.md) - Beschreibt die Erzeugung einer ONNX für die spätere Ausführung der Policy
 

@@ -64,3 +64,6 @@ Detaillierte Informationen zu den vorgenommenen Anpassungen und der Portierung d
 
 * [Live-Demo](./docs/Livedemo.md) - Beschreibt wie eine trainierte Policy live in der Simulation ausführt werden kann
 
+* [Domain-Randomization](./docs/domain_randomization.md) - Beschreibt die aktuelle Domain-Randomization in dem Projekt
+
+* [Reward-Function-Documentation](.docs/reward_functions.md) - Beschreibt die Reward-Function in dem Projekt

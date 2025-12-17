@@ -62,3 +62,5 @@ Detaillierte Informationen zu den vorgenommenen Anpassungen und der Portierung d
 
 * [ONNX-Generierung](./docs/create_onnx.md) - Beschreibt die Erzeugung einer ONNX für die spätere Ausführung der Policy
 
+* [Live-Demo](./docs/Livedemo.md) - Beschreibt wie eine trainierte Policy live in der Simulation ausführt werden kann
+

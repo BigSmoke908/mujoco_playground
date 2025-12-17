@@ -56,7 +56,7 @@
 
 Detaillierte Informationen zu den vorgenommenen Anpassungen und der Portierung der Umgebung befinden sich hier:
 
-* [Environment Documentation](./docs/mujoco_environment.md) – Beschreibt den generellen Aufbau von `Mujoco-Environments`, sowie die Erstellung des [`wolvesop-Environemts`](./mujoco_playground/_src/locomotion/wolves_op/)
+* [Environment Documentation](./docs/mujoco_environment.md) – Beschreibt den generellen Aufbau von `Mujoco-Environments`, sowie die Erstellung des [`wolvesop-Environments`](./mujoco_playground/_src/locomotion/wolves_op/)
 
 * [Mujoco-Model Documentation](./docs/mujoco_model_documentation.md) - Beschreibt die Erstellung von Mujoco-Modellen aus URDF-Modellen
 

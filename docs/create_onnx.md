@@ -6,9 +6,10 @@
  - die ONNX Datei kann im Anschluss an das Training direkt automatisch erzeugt werden
  - hierfür muss bei dem Aufruf für das Training (`python learning/train_jax_ppo.py ...`) ein Ordner für die Erzeugung der ONNX übergeben werden
  - bsp.: `python learning/train_jax_ppo.py ... --model=model`
- - der Ordner wird automatisch neben den checkpoint-Order (`logs/WolvesOPJoystickFlatTerrain-..../checkpoints/`) platziert und die erzeugt ONNX
+ - der Ordner wird automatisch neben den checkpoint-Order (`logs/WolvesOPJoystickFlatTerrain-..../checkpoints/`) platziert und enthält die ONNX mit der trainierten Policy
 
-### Vollständiges funktionierendes Beispiel
+### vollständiger Beispielaufruf
+
 `python learning/train_jax_ppo.py --env_name=WolvesOPJoystickFlatTerrain --model=model`
 
 ## nach dem Training
@@ -18,7 +19,7 @@
  
  `python learning/utils/convert_to_onnx.py --checkpoint={CHECKPOINT} --output={OUTPUT} --env_name={ENV_NAME}`
 
-### Vollständiges funktionierendes Beispiel
+### vollständiger Beispielaufruf
 `python learning/utils/convert_to_onnx.py --checkpoint=docs/working_policy/WolvesOPJoystickFlatTerrain-20251207-163905/checkpoint/000151388160 --output=mujoco_playground/experimental/sim2sim/onnx/wolves_op_policy.onnx --env_name=WolvesOPJoystickFlatTerrain`
 
 

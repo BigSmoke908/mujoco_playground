@@ -10,7 +10,7 @@ Die Erstellung der Simulationsumgebung erfolgt in drei logischen Schritten. Es e
 ### Export (URDF zu XML): Konvertierung der URDF-Datei in eine rohe Mujoco-XML (`mjmodel.xml`)
 
  - [den Mujoco-Viewer öffnen](../README.md#mujoco-viewer-öffnen)
- - eine URDF-Datei reinziehen (wichtig: verwendete .stl-Files müssen sich neben der URDF befinden)
+ - eine URDF-Datei per Drag-and-Drop in die Simulation laden (wichtig: verwendete .stl-Files müssen sich neben der URDF befinden)
  - das Modell über "Save xml" abspeichern
  - an Stelle wo der python-Aufruf für den mujoco-viewer gestartet wurde befindet sich jetzt auch Basis-XML
  - diese Basis-XML muss jetzt noch in das Environment nach `xmls/wolvesop_mjx_footonly.xml` verlegt werden, wo diese in den nächsten Schritten weiter verarbeitet wird
@@ -18,7 +18,7 @@ Die Erstellung der Simulationsumgebung erfolgt in drei logischen Schritten. Es e
 
 ### Aufbereitung des Modells:
 
-> die URDF-Datei enthält nur einen Teil der für die Simulation benötigten Daten. Die fehlende Daten müssen manuell eingefügt werden. Die folgenden Schritte sind stark an dem [Basisprojekt](https://github.com/bit-bots/mujoco_playground#) orientiert und daher teilweise nicht extra begründet. Das in unserem Projekt entwickelte Roboter-Modell befindet sich in der [wolvesop_mjx_footonly.xml](../mujoco_playground/_src/locomotion/wolves_op/xmls/wolvesop_mjx_feetonly.xml).
+> die URDF-Datei enthält nur einen Teil der für die Simulation benötigten Daten. Die fehlende Daten müssen manuell eingefügt werden. Die folgenden Schritte sind stark an dem [Basisprojekt](https://github.com/bit-bots/mujoco_playground#) orientiert und daher teilweise nicht extra begründet. Das in unserem Projekt entwickelte Modell befindet sich in der [wolvesop_mjx_footonly.xml](../mujoco_playground/_src/locomotion/wolves_op/xmls/wolvesop_mjx_feetonly.xml).
 
 #### Simulations-Parameter
 
@@ -32,7 +32,7 @@ Direkt in dem `mujoco`-Element müssen folgende Simulations-Parameter eingefügt
 
 #### Mujoco-Basisklassen
 
-Mujoco erlaubt die Definition von Basisklassen, welche anschließend für Default-Werte für andere Elemente vorgeben können. Die folgenden Basisklassen wurden aus dem [Basisprojekt](https://github.com/bit-bots/mujoco_playground#) entnommen, um die Kollision von Bauteilen und Servo-Parameter zu setzen:
+Mujoco erlaubt die Definition von Basisklassen, welche anschließend für Default-Werte für andere Elemente vorgeben können. Die folgenden Basisklassen wurden aus dem [Basisprojekt](https://github.com/bit-bots/mujoco_playground#) entnommen, um die Kollisionen von Bauteilen und Servo-Parameter zu setzen:
 
 ```xml
 <default>
@@ -85,7 +85,7 @@ Nachher:
 
 #### Kollisionen einstellen
 
-Für das Training können bei allen Bauteilen außer den Fußplatten die Kollisionen deaktiviert werden. Hierfür wird bei allen `geom`-Element die vorher definierte Basisklasse `visual` verwendet. Ein Beispiel:
+Für das Training können bei allen Bauteilen, außer den Fußplatten, die Kollisionen deaktiviert werden. Hierfür wird bei allen `geom`-Element die vorher definierte Basisklasse `visual` verwendet. Ein Beispiel:
 
 Vorher:
 ```xml
@@ -184,7 +184,7 @@ Nachher
 
 #### Joint Konfiguration
 
-Der Einfachheit halber wurden die Joint-Namen aus dem Basisprojekt in die XML übernommen. Daher müssen alle Joints in den Beinen wie folgt umbenannt werden:
+Die Joint-Namen aus dem Basisprojekt müssen in die XML übernommen werden. Das liegt daran, dass die Joints später anhand ihrer Namen angesprochen werden um Rewards zu berechnen. Da die Namen dafür in dem Skript dynamisch zusammengesetzt werden ist ein umfangreicheres Refactoring für eine Behebung von diesem Schritt notwendig. Daher müssen  die Joints aktuell wie folgt umbenannt werden:
 
 | Original Name (mjmodel.xml) | Status         | Neuer Name (wolvesop_mjx_feetonly.xml) | Beschreibung           |
 | :-------------------------- | :------------- | :------------------------------------- | :--------------------- |
@@ -236,7 +236,7 @@ Die Joints in den Armen und dem Kopf werden von der trainierten Policy nicht ver
 
 #### Actuator Konfiguration
 
-An den Joints welche von der Policy angesteuert werden werden jetzt Aktuatoren mit den vorher definierten Motorklassen eingefügt. Das passiert wieder innerhalb von dem `mujoco`-Element. Diese Elemente müssen eingefügt werden:
+An den Joints welche von der Policy angesteuert werden, werden jetzt Aktuatoren mit den vorher definierten Motorklassen eingefügt. Das passiert wieder innerhalb von dem `mujoco`-Element. Diese Elemente müssen eingefügt werden:
 
 ```xml
 <actuator>
@@ -284,12 +284,12 @@ Ebenfalls in dem `mujoco`-Element werden abschließend die simulierten Sensoren 
 ```
 
 
-Die Konfiguration Aufbereitung des eigentlichen Roboter Modells ist damit abgeschlossen und dieses kann in den nächsten Schritten in eine Szene eingefügt werden.
+Die Aufbereitung des eigentlichen Roboter Modells ist damit abgeschlossen, sodass dieses in den weiteren Schritten in eine Szene eingefügt werden kann.
 
 
-### Komposition (Scene XML): Einbettung des Roboter-MOdells in eine Umgebung mit Boden
+### Komposition (Scene XML): Einbettung des Roboter-Modells in eine Umgebung mit Boden
 
-Bei dem Training wird nicht das eigentliche Roboter-Modell (`wolvesop_mjx_feetonly.xml`) geladen, sondern eine Szene verwendet welche dieses Modell beinhaltet. Für das normale Training verwenden wir hier die [scene_mjx_feetonly_flat_terrain.xml](../mujoco_playground/_src/locomotion/wolves_op/xmls/scene_mjx_feetonly_flat_terrain.xml). Diese ist bis auf wenige Änderungen vollständig aus dem [Basis-Environment](./mujoco_environment.md) übernommen. Es existiert eine [zweite Szene](../mujoco_playground/_src/locomotion/wolves_op/xmls/scene_mjx_feetonly_rough_terrain.xml) welche raues Terrain enthält, in dem Projekt wurde allerdings nur die Szene mit "flat-terrain" getestet.
+Bei dem Training wird nicht das eigentliche Roboter-Modell (`wolvesop_mjx_feetonly.xml`) geladen, sondern eine Szene verwendet welche dieses Modell beinhaltet. Für das normale Training verwenden wir hier die [scene_mjx_feetonly_flat_terrain.xml](../mujoco_playground/_src/locomotion/wolves_op/xmls/scene_mjx_feetonly_flat_terrain.xml). Diese ist bis auf wenige Änderungen vollständig aus dem [Basis-Environment](https://github.com/bit-bots/mujoco_playground/tree/main/mujoco_playground/_src/locomotion/wolfgang) übernommen. Es existiert eine [zweite Szene](../mujoco_playground/_src/locomotion/wolves_op/xmls/scene_mjx_feetonly_rough_terrain.xml) welche raues Terrain enthält, in dem Projekt wurde allerdings nur die Szene mit "flat-terrain" getestet.
 
 Die einzigen vorgenommenen Änderungen sind hier die inkludierte Datei `<include file="wolvesop_mjx_feetonly.xml" />` und der zu Beginn des Trainings geladene `key`, über welchen die Startpositionen der Servos eingestellt werden:
 
@@ -308,5 +308,5 @@ Die einzigen vorgenommenen Änderungen sind hier die inkludierte Datei `<include
 
 ## Dateistruktur & Assets
 
-Ähnlich wie eine `URDF`-Datei verwenden auch Mujoco-XML-Modell im Hintergrund .stdl-Dateien um Meshes zu laden. Diese müssen in `xmls/stls/` platziert werden.
+Ähnlich wie eine `URDF`-Datei verwenden auch Mujoco-XML-Modelle im Hintergrund .stl-Dateien um Meshes zu laden. Diese müssen in `xmls/stls/` platziert werden.
 

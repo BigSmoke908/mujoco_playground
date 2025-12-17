@@ -1,15 +1,15 @@
 # Reward-Funktionen – WolvesOP Joystick Environment
 
-Hinweis: Die Reward-Funktionen basieren auf einer Kopie des bestehenden Wolfgang-Environments. Daher lassen sich nicht alle Designentscheidungen im Detail begründen.
+Hinweis: Die Reward-Funktion basiert auf einer Kopie des bestehenden [Wolfgang-Environments](../mujoco_playground/_src/locomotion/wolfgang/). Daher lassen sich nicht alle Designentscheidungen im Detail begründen.
 
-## Zweck der Reward-Funktionen
+## Zweck der Reward-Funktion
 
 
-Die Reward-Funktionen bewerten das Verhalten des Agenten während der Simulation im Mujoco-Playground. Sie liefern in jedem Zeitschritt ein skalierbares Feedback-Signal für das Reinforcement Learning und steuern, welche Bewegungsmuster als erwünscht oder unerwünscht gelten.
+Die Reward-Funktion bewertet das Verhalten des Agenten während der Simulation im Mujoco-Playground. Sie liefert in jedem Zeitschritt ein skalierbares Feedback-Signal für das Reinforcement Learning und steuert, welche Bewegungsmuster als erwünscht oder unerwünscht gelten.
 
 Ziel ist es, einen stabilen, energieeffizienten und befehlsgetreuen Gang des humanoiden Roboters zu erlernen. Die Reward-Berechnung erfolgt vollständig im Zeitschritt und basiert auf einer gewichteten Summe mehrerer Teil-Rewards und Kosten.
 
-Die vollständige Implementierung der Reward-Funktionen befindet sich in der Datei Joystick.py. Dort werden alle Teil-Rewards berechnet, skaliert und zu einem Gesamtreward zusammengeführt. Die zentrale Logik ist in der Methode _get_reward(...) gekapselt, welche pro Zeitschritt alle einzelnen Reward- und Kostenkomponenten auswertet und zurückgibt.
+Die vollständige Implementierung der Reward-Funktion befindet sich in der Datei Joystick.py. Dort werden alle Teil-Rewards berechnet, skaliert und zu einem Gesamtreward zusammengeführt. Die zentrale Logik ist in der Methode _get_reward(...) gekapselt, welche pro Zeitschritt alle einzelnen Reward- und Kostenkomponenten auswertet und zurückgibt.
 Über die reward_config lassen sich zudem die Skalierungsfaktoren konfigurieren (siehe Abschnitt Grundprinzip).
 
 ---
@@ -22,7 +22,7 @@ Das Reward-System folgt drei Prinzipien:
 - **Stabilität**: Instabile und physikalisch unplausible Zustände werden bestraft.
 - **Effizienz**: Energieverbrauch und abrupte Bewegungen werden reduziert.
 
-Alle Teil-Rewards werden über Skalierungsfaktoren gewichtet und anschließend zeitlich integriert. Die Skalierungsfaktoren sind in der reward_config innerhalb der Joystick.py definiert und können dort angepasst werden.
+Alle Teil-Rewards werden über Skalierungsfaktoren gewichtet und anschließend zeitlich integriert. Die Skalierungsfaktoren sind in der reward_config innerhalb der [Joystick.py](../mujoco_playground/_src/locomotion/wolves_op/joystick.py) definiert und können dort angepasst werden.
 
 ---
 

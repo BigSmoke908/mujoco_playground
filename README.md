@@ -3,8 +3,7 @@
 ## Entwicklungsumgebung einrichten
 
  - [uv](https://docs.astral.sh/uv/getting-started/installation/) installieren
- - ssh-Key für den Zugriff auf Github (läuft aktuell auf Privataccount) eingerichtet
- - [Projekt-Repo](https://github.com/BigSmoke908/mujoco_playground) in das Homeverzeichnis gecloned: `git clone https://github.com/BigSmoke908/mujoco_playground`
+ - [Projekt-Repo](https://github.com/BigSmoke908/mujoco_playground) clonen: `git clone https://github.com/BigSmoke908/mujoco_playground`
  - `cd mujoco_playground`
  - `uv venv --python 3.11`, lokale von uv verwaltete Python Umgebung erstellen
  - `source .venv/bin/activate`, die Umgebung aktivieren
@@ -15,7 +14,7 @@
 
 
 ## Mujoco-Viewer öffnen
-> Hierfür muss Mujoco installiert sein. Am einfachsten geht das, indem man die [Installationanleitung für den Playground](README.md#entwicklungsumgebung-einrichten) befolgt.
+> Hierfür muss Mujoco installiert sein. Am einfachsten geht das, indem man die [Installationanleitung für den Mujoco-Playground](README.md#entwicklungsumgebung-einrichten) befolgt.
 
  - `cd mujoco_playground`, in den lokalen Projekt-Clon wechseln
  - `source .venv/bin/activate`, die lokale Python Umgebung aktivieren
@@ -29,9 +28,9 @@
 > Über das Script [train_jax_ppo.py](./learning/train_jax_ppo.py) wird aktuell das Training ausgeführt
 
  - `cd mujoco_playground`  -> hier den lokalen Clon vom Repository wechseln
- - `source ./venv/activate`,  um die lokale Python Umgebung zu aktivieren (muss pro Terminal-Session nur einmal durchgeführt werden)
+ - `source ./venv/activate`,  die lokale Python Umgebung zu aktivieren (muss pro Terminal-Session nur einmal durchgeführt werden)
  - `python learning/train_jax_ppo.py --env_name=WolvesOPJoystickFlatTerrain`, Standardaufruf für das Training
- - das Ergebnis von dem Training kann in dem [logs/](./logs/) Ordern gefunden werden. Hier befindet sich je nach Trainingsparametern auch die generierte [ONNX-Datei](./docs/create_onnx.md#als-teil-vom-training)
+ - das Ergebnis von dem Training befindet sich in [logs/](./logs/). Hier befindet sich je nach Trainingsparametern auch die generierte [ONNX-Datei](./docs/create_onnx.md#als-teil-vom-training)
 
 
 ### einige optionale Trainingsparameter
@@ -66,4 +65,4 @@ Detaillierte Informationen zu den vorgenommenen Anpassungen und der Portierung d
 
 * [Domain-Randomization](./docs/domain_randomization.md) - Beschreibt die aktuelle Domain-Randomization in dem Projekt
 
-* [Reward-Function-Documentation](.docs/reward_functions.md) - Beschreibt die Reward-Function in dem Projekt
+* [Reward-Function-Documentation](.docs/reward_function.md) - Beschreibt die Reward-Function in dem Projekt

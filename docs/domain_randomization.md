@@ -1,10 +1,5 @@
 # Domain-Randomization
 
-## Warum?
-
-Echte Roboter verhalten sich nie wie das perfekt Modell -> mit leicht verschiedenen Robotern trainieren hilft das auszugleichen
-
-
 ## Grundlagen
 
 Zu einem Locomotion Environment gehört immer ein Randomizer, um die spezifische Domain-Randomization durchzuführen. Welcher Randomizer zu welchem Environment gehört wird in der [__init__.py](../mujoco_playground/_src/locomotion/__init__.py) von dem `locomotion-Package` angegeben. Beispiel:
@@ -25,7 +20,7 @@ _randomizer = {
 Die Konvention ist, dass jedes Locomotion-Environment eine [randomize.py](../mujoco_playground/_src/locomotion/wolves_op/randomize.py) hat, in der die Bot-spezifische Domain-Randomization durchgeführt wird.
 
 
-## Was macht unsere Randomization aktuell
+## Was macht die Randomization aktuell
 
  - Random Gain: Factor mit dem Motor-Output multipiziert wird -> simuliert leicht verschiedene Motoren (bei unserer Parametrisierung extrem stark)
  - Random Friction: Bodenhaften variieren
@@ -37,7 +32,7 @@ Die Konvention ist, dass jedes Locomotion-Environment eine [randomize.py](../muj
  - Random Pertubations: jede Rotationsaxe ist zufällig ein kleines bisschen verdreht
 
 
-## Was könnte man noch einbauen
+## Weitere Ideen
 
- - Random Backlash: jeder Motor hat auch wenn er eine fest Position anfährt ein gewisses Spiel (kann noch ein bisschen gedreht werden) (scheint nicht nativ in Mujoco umgesetzt zu sein->https://mujoco.readthedocs.io/en/stable/modeling.html#backlash)
+ - Random Backlash: jeder Motor hat auch wenn er eine fest Position anfährt ein gewisses Spiel ("kann noch ein bisschen gedreht werden") (scheint nicht nativ in Mujoco umgesetzt zu sein->https://mujoco.readthedocs.io/en/stable/modeling.html#backlash) könnte über einen Workaround aber nachträglich an ein Model angefügt werden
  - 

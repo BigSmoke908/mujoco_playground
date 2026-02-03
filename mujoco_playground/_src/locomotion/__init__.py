@@ -46,6 +46,8 @@ from mujoco_playground._src.locomotion.x02 import joystick as x02_joystick
 from mujoco_playground._src.locomotion.x02 import randomize as x02_randomize
 from mujoco_playground._src.locomotion.wolves_op import joystick as wolvesop_joystick
 from mujoco_playground._src.locomotion.wolves_op import randomize as wolvesop_randomize
+from mujoco_playground._src.locomotion.wolves_op_tc import joystick as wolvesop_tc_joystick
+from mujoco_playground._src.locomotion.wolves_op_tc import randomize as wolvesop_tc_randomize
 
 
 mjx_env.ensure_menagerie_exists()  # Ensure menagerie exists when module is imported.
@@ -110,6 +112,12 @@ _envs = {
     "WolvesOPJoystickRoughTerrain": functools.partial(
         wolvesop_joystick.Joystick, task="rough_terrain"
     ),
+    "WolvesOPTCJoystickFlatTerrain": functools.partial(
+        wolvesop_tc_joystick.Joystick, task="flat_terrain"
+    ),
+    "WolvesOPTCJoystickRoughTerrain": functools.partial(
+        wolvesop_tc_joystick.Joystick, task="rough_terrain"
+    ),
 }
 
 _cfgs = {
@@ -146,6 +154,8 @@ _cfgs = {
     "X02JoystickRoughTerrain": x02_joystick.default_config,
     "WolvesOPJoystickFlatTerrain": wolvesop_joystick.default_config,
     "WolvesOPJoystickRoughTerrain": wolvesop_joystick.default_config,
+    "WolvesOPTCJoystickFlatTerrain": wolvesop_tc_joystick.default_config,
+    "WolvesOPTCJoystickRoughTerrain": wolvesop_tc_joystick.default_config,
 }
 _randomizer = {
     "BerkeleyHumanoidJoystickFlatTerrain": (
@@ -173,6 +183,8 @@ _randomizer = {
     "X02JoystickRoughTerrain": x02_randomize.domain_randomize,
     "WolvesOPJoystickFlatTerrain": wolvesop_randomize.domain_randomize,
     "WolvesOPJoystickRoughTerrain": wolvesop_randomize.domain_randomize,
+    "WolvesOPTCJoystickFlatTerrain": wolvesop_tc_randomize.domain_randomize,
+    "WolvesOPTCJoystickRoughTerrain": wolvesop_tc_randomize.domain_randomize,
 }
 
 

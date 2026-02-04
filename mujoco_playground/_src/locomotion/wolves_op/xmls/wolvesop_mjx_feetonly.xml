@@ -208,13 +208,13 @@
       <geom class="visual" type="mesh" rgba="0.1 0.1 0.1 1" mesh="bumper_solid_v1_1"/>
       <body name="HN05-N101_v1__17__1" pos="-0.002487 -0.05502 -0.1643" childclass="mx106">
         <inertial pos="0.0112058 -0.0105675 -0.0102981" quat="0.506212 0.497603 0.502633 0.493457" mass="0.203434" diaginertia="0.00032652 0.000319047 6.65955e-05"/>
-        <joint name="LR_HR" pos="0 0 0" axis="0 0 -1" range="-3.14159 3.14159" actuatorfrcrange="-8.4 8.4"/>
+        <joint name="LR_HR" pos="0 0 0" axis="0 0 -1" range="-3.14159 3.14159" actuatorfrcrange="-8.4 8.4" class="mx106"/>
         <geom class="visual" pos="0.002487 0.05502 0.1643" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="HN05-N101_v1__17__1"/>
         <geom class="visual" pos="0.002487 0.05502 0.1643" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="12_hip_u_profile_v1__1__1"/>
         <geom class="visual" pos="0.002487 0.05502 0.1643" type="mesh" rgba="0.7 0.7 0.7 1" mesh="HN05-N101_v1_1"/>
         <body name="MX-106_v2_1" pos="-0.047599 -0.000272 -0.040769">
           <inertial pos="0.0485793 0.00324208 -0.0146154" quat="0.605422 0.416723 0.56289 0.378103" mass="0.367473" diaginertia="0.000373275 0.000336641 0.000187343"/>
-          <joint name="LR_HAA" pos="0 0 0" axis="0.999984 0.005697 0" range="-1.8326 1.8326" actuatorfrcrange="-8.4 8.4"/>
+          <joint name="LR_HAA" pos="0 0 0" axis="0.999984 0.005697 0" range="-1.8326 1.8326" actuatorfrcrange="-8.4 8.4" class="mx106"/>
           <geom class="visual" pos="0.050086 0.055292 0.205069" quat="1 0 0 0" type="mesh" rgba="0.1 0.1 0.1 1" mesh="MX-106_v2_1"/>
           <geom class="visual" pos="0.050086 0.055292 0.205069" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="14_motor_joint_connector_v1__1__1"/>
           <geom class="visual" pos="0.050086 0.055292 0.205069" type="mesh" rgba="0.1 0.1 0.1 1" mesh="MX-106_v2__10__1"/>
@@ -224,7 +224,7 @@
           <geom class="visual" pos="0.050086 0.055292 0.205069" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="14_motor_joint_connector_v1__2__1"/>
           <body name="HN05-N101_v1__1__1" pos="0.070746 0.027204 0">
             <inertial pos="-0.0603602 -0.0127934 -0.125403" quat="0.683788 0.00630189 0.152202 0.713603" mass="0.223661" diaginertia="0.00127655 0.000896498 0.000454377"/>
-            <joint name="LR_HFE" pos="0 0 0" axis="-0.005697 0.999984 -1e-06" range="-0.959931 2.18166" actuatorfrcrange="-8.4 8.4"/>
+            <joint name="LR_HFE" pos="0 0 0" axis="-0.005697 0.999984 -1e-06" range="-0.959931 2.18166" actuatorfrcrange="-8.4 8.4" class="mx106"/>
             <geom class="visual" pos="-0.02066 0.028088 0.205069" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="HN05-N101_v1__1__1"/>
             <geom class="visual" pos="-0.02066 0.028088 0.205069" quat="1 0 0 0" type="mesh" rgba="0.13 0.16 0.21 1" mesh="15_upper_leg_v2__2__1"/>
             <geom class="visual" pos="-0.02066 0.028088 0.205069" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="17_knee_joint_connector_new_v2__1__1"/>
@@ -236,7 +236,7 @@
             <geom class="visual" pos="-0.02066 0.028088 0.205069" quat="1 0 0 0" type="mesh" rgba="0.1 0.1 0.1 1" mesh="upper_leg_spacer_short_X_v1__5__1"/>
             <body name="HN05-N101_v1__7__1" pos="-0.004021 -0.000523 -0.169218">
               <inertial pos="0.052282 -0.00574387 -0.0591014" quat="0.737321 -0.219572 -0.237134 0.593223" mass="0.0625396" diaginertia="0.000280125 0.000227196 0.000102053"/>
-              <joint name="LR_KFE" pos="0 0 0" axis="-0.005697 0.999984 1e-06" range="-0.785398 2.53073" actuatorfrcrange="-8.4 8.4"/>
+              <joint name="LR_KFE" pos="0 0 0" axis="-0.005697 0.999984 1e-06" range="-0.785398 2.53073" actuatorfrcrange="-8.4 8.4" class="mx106"/>
               <geom class="visual" pos="-0.016639 0.028611 0.374287" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="HN05-N101_v1__7__1"/>
               <geom class="visual" pos="-0.016639 0.028611 0.374287" quat="1 0 0 0" type="mesh" rgba="0.13 0.16 0.21 1" mesh="18_lower_leg_v2__2__1"/>
               <geom class="visual" pos="-0.016639 0.028611 0.374287" quat="1 0 0 0" type="mesh" rgba="0.1 0.1 0.1 1" mesh="upper_leg_spacer_short_X_v1__1__1"/>
@@ -245,7 +245,7 @@
               <geom class="visual" pos="-0.016639 0.028611 0.374287" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="HN05-N101_v1__6__1"/>
               <body name="MX-106_v2__5__1" pos="0.05812 0.0043 -0.159748">
                 <inertial pos="-0.00169138 -0.0409136 0.0106539" quat="0.964631 -0.134703 -0.127065 -0.187606" mass="0.367473" diaginertia="0.000226101 0.000195142 0.000150898"/>
-                <joint name="LR_FFE" pos="0 0 0" axis="0.005697 -0.999984 -1e-06" range="-0.785398 2.53073" actuatorfrcrange="-8.4 8.4"/>
+                <joint name="LR_FFE" pos="0 0 0" axis="0.005697 -0.999984 -1e-06" range="-0.785398 2.53073" actuatorfrcrange="-8.4 8.4" class="mx106"/>
                 <geom class="visual" pos="-0.074759 0.024311 0.534035" type="mesh" rgba="0.1 0.1 0.1 1" mesh="MX-106_v2__5__1"/>
                 <geom class="visual" pos="-0.074759 0.024311 0.534035" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="HN05-i1_v1__7__1"/>
                 <geom class="visual" pos="-0.074759 0.024311 0.534035" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="14_motor_joint_connector_v1__7__1"/>
@@ -255,7 +255,7 @@
                 <geom class="visual" pos="-0.074759 0.024311 0.534035" type="mesh" rgba="0.7 0.7 0.7 1" mesh="HN05-i1_v1__11__1"/>
                 <body name="HN05-N101_v1__16__1" pos="-0.067342 -0.031184 -0.018091">
                   <inertial pos="0.00013106 -0.00574255 0.0401627" quat="0.322191 0.61456 0.587351 0.416566" mass="0.102019" diaginertia="0.000601095 0.000495157 0.000211139"/>
-                  <joint name="LR_FAA" pos="0 0 0" axis="-0.96591 -0.005503 -0.258819" range="-1.65806 1.65806" actuatorfrcrange="-8.4 8.4"/>
+                  <joint name="LR_FAA" pos="0 0 0" axis="-0.96591 -0.005503 -0.258819" range="-1.65806 1.65806" actuatorfrcrange="-8.4 8.4" class="mx106"/>
                   <geom class="visual" pos="-0.007417 0.055495 0.552126" type="mesh" rgba="0.7 0.7 0.7 1" mesh="HN05-N101_v1__16__1"/>
                   <geom class="visual" pos="-0.007417 0.055495 0.552126" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="21_ankle_bend_v2__1__1"/>
                   <geom name="r_foot1" class="collision" pos="-0.007417 0.055495 0.552126" quat="1 0 0 0" type="mesh" rgba="0.13 0.16 0.21 1" mesh="23_foot_plate_right_v2_1"/>
@@ -268,13 +268,13 @@
       </body>
       <body name="HN05-N101_v1__14__1" pos="-0.003114 0.054978 -0.1643" childclass="mx106">
         <inertial pos="0.0112061 -0.0105673 -0.0102979" quat="0.506212 0.497603 0.502633 0.493457" mass="0.203434" diaginertia="0.00032652 0.000319047 6.65955e-05"/>
-        <joint name="LL_HR" pos="0 0 0" axis="0 1e-06 -1" range="-3.14159 3.14159" actuatorfrcrange="-8.4 8.4"/>
+        <joint name="LL_HR" pos="0 0 0" axis="0 1e-06 -1" range="-3.14159 3.14159" actuatorfrcrange="-8.4 8.4" class="mx106"/>
         <geom class="visual" pos="0.003114 -0.054978 0.1643" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="HN05-N101_v1__14__1"/>
         <geom class="visual" pos="0.003114 -0.054978 0.1643" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="12_hip_u_profile_v1_1"/>
         <geom class="visual" pos="0.003114 -0.054978 0.1643" type="mesh" rgba="0.7 0.7 0.7 1" mesh="HN05-N101_v1__3__1"/>
         <body name="MX-106_v2__1__1" pos="-0.047599 -0.000271 -0.040769">
           <inertial pos="0.0484355 0.00237825 -0.0147602" quat="0.578853 0.490972 0.492857 0.425402" mass="0.367473" diaginertia="0.000393555 0.000339335 0.000192866"/>
-          <joint name="LL_HAA" pos="0 0 0" axis="0.999984 0.005697 0" range="-1.8326 1.8326" actuatorfrcrange="-8.4 8.4"/>
+          <joint name="LL_HAA" pos="0 0 0" axis="0.999984 0.005697 0" range="-1.8326 1.8326" actuatorfrcrange="-8.4 8.4" class="mx106"/>
           <geom class="visual" pos="0.050713 -0.054707 0.205069" quat="1 0 0 0" type="mesh" rgba="0.1 0.1 0.1 1" mesh="MX-106_v2__1__1"/>
           <geom class="visual" pos="0.050713 -0.054707 0.205069" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="14_motor_joint_connector_v1__3__1"/>
           <geom class="visual" pos="0.050713 -0.054707 0.205069" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="14_motor_joint_connector_v1_1"/>
@@ -284,7 +284,7 @@
           <geom class="visual" pos="0.050713 -0.054707 0.205069" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="HN05-i1_v1__2__1"/>
           <body name="HN05-N101_v1__2__1" pos="0.071052 -0.026396 0">
             <inertial pos="-0.067957 0.0171635 -0.121845" quat="0.789246 -0.0290783 -0.0209613 0.613031" mass="0.223661" diaginertia="0.00123 0.00109052 0.000203116"/>
-            <joint name="LL_HFE" pos="0 0 0" axis="0.005697 -0.999984 1e-06" range="-2.18166 0.959931" actuatorfrcrange="-8.4 8.4"/>
+            <joint name="LL_HFE" pos="0 0 0" axis="0.005697 -0.999984 1e-06" range="-2.18166 0.959931" actuatorfrcrange="-8.4 8.4" class="mx106"/>
             <geom class="visual" pos="-0.020339 -0.028311 0.205069" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="HN05-N101_v1__2__1"/>
             <geom class="visual" pos="-0.020339 -0.028311 0.205069" quat="1 0 0 0" type="mesh" rgba="0.13 0.16 0.21 1" mesh="15_upper_leg_v2__1__1"/>
             <geom class="visual" pos="-0.020339 -0.028311 0.205069" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="17_knee_joint_connector_new_v2__2__1"/>
@@ -296,7 +296,7 @@
             <geom class="visual" pos="-0.020339 -0.028311 0.205069" quat="1 0 0 0" type="mesh" rgba="0.1 0.1 0.1 1" mesh="upper_leg_spacer_short_X_v1__3__1"/>
             <body name="HN05-N101_v1__8__1" pos="-0.004019 -0.000923 -0.169218">
               <inertial pos="0.0207386 0.0119364 -0.0685848" quat="0.692311 -0.200537 -0.126738 0.681489" mass="0.0625396" diaginertia="0.000293535 0.000212019 0.000122266"/>
-              <joint name="LL_KFE" pos="0 0 0" axis="0.005697 -0.999984 -1e-06" range="-2.53073 0.785398" actuatorfrcrange="-8.4 8.4"/>
+              <joint name="LL_KFE" pos="0 0 0" axis="0.005697 -0.999984 -1e-06" range="-2.53073 0.785398" actuatorfrcrange="-8.4 8.4" class="mx106"/>
               <geom class="visual" pos="-0.01632 -0.027388 0.374287" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="HN05-N101_v1__8__1"/>
               <geom class="visual" pos="-0.01632 -0.027388 0.374287" quat="1 0 0 0" type="mesh" rgba="0.13 0.16 0.21 1" mesh="18_lower_leg_v2_1"/>
               <geom class="visual" pos="-0.01632 -0.027388 0.374287" quat="1 0 0 0" type="mesh" rgba="0.1 0.1 0.1 1" mesh="upper_leg_spacer_short_X_v1_1"/>
@@ -305,7 +305,7 @@
               <geom class="visual" pos="-0.01632 -0.027388 0.374287" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="HN05-N101_v1__5__1"/>
               <body name="MX-106_v2__6__1" pos="0.058165 -0.003668 -0.159748">
                 <inertial pos="-0.0172072 0.00425469 0.00828189" quat="0.608611 0.734519 -0.293472 -0.0628329" mass="0.367473" diaginertia="0.000457987 0.000407503 0.000161299"/>
-                <joint name="LL_FFE" pos="0 0 0" axis="-0.005697 0.999984 1e-06" range="-2.53073 0.785398" actuatorfrcrange="-8.4 8.4"/>
+                <joint name="LL_FFE" pos="0 0 0" axis="-0.005697 0.999984 1e-06" range="-2.53073 0.785398" actuatorfrcrange="-8.4 8.4" class="mx106"/>
                 <geom class="visual" pos="-0.074485 -0.02372 0.534035" type="mesh" rgba="0.1 0.1 0.1 1" mesh="MX-106_v2__6__1"/>
                 <geom class="visual" pos="-0.074485 -0.02372 0.534035" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="HN05-i1_v1__6__1"/>
                 <geom class="visual" pos="-0.074485 -0.02372 0.534035" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="14_motor_joint_connector_v1__5__1"/>
@@ -315,7 +315,7 @@
                 <geom class="visual" pos="-0.074485 -0.02372 0.534035" type="mesh" rgba="0.7 0.7 0.7 1" mesh="HN05-i1_v1__12__1"/>
                 <body name="HN05-N101_v1__4__1" pos="-0.067692 0.030415 -0.018091">
                   <inertial pos="1.3905e-05 0.00489957 0.0401947" quat="0.413497 0.584203 0.617445 0.326328" mass="0.102103" diaginertia="0.000601548 0.000495666 0.000211221"/>
-                  <joint name="LL_FAA" pos="0 0 0" axis="-0.96591 -0.005503 -0.258819" range="-1.65806 1.65806" actuatorfrcrange="-8.4 8.4"/>
+                  <joint name="LL_FAA" pos="0 0 0" axis="-0.96591 -0.005503 -0.258819" range="-1.65806 1.65806" actuatorfrcrange="-8.4 8.4" class="mx106"/>
                   <geom class="visual" pos="-0.006793 -0.054135 0.552126" type="mesh" rgba="0.7 0.7 0.7 1" mesh="HN05-N101_v1__4__1"/>
                   <geom class="visual" pos="-0.006793 -0.054135 0.552126" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="21_ankle_bend_v2_1"/>
                   <geom name="l_foot1" class="collision" pos="-0.006793 -0.054135 0.552126" quat="1 0 0 0" type="mesh" rgba="0.13 0.16 0.21 1" mesh="22_foot_plate_left_v2_1"/>

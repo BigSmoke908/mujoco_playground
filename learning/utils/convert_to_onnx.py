@@ -1,6 +1,17 @@
 import pathlib
 import orbax.checkpoint as ocp
 import pickle
+import numpy as np
+
+# --- FIX FÜR NUMPY 2.0 ---
+# tf2onnx nutzt intern 'np.cast', was in NumPy 2.0 entfernt wurde.
+# Wir patchen es hier temporär, damit der Exporter nicht abstürzt.
+if not hasattr(np, "cast"):
+    class CastMap:
+        def __getitem__(self, type_):
+            return lambda x: np.asarray(x, dtype=type_)
+    np.cast = CastMap()
+    print("Info: NumPy 2.0 Compatibility Patch applied.")
 
 
 def conv_to_onnx(checkpoint: str, output: str, env_name: str):

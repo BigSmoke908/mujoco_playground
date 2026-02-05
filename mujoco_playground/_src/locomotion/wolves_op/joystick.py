@@ -94,6 +94,7 @@ def default_config() -> config_dict.ConfigDict:
       lin_vel_x=[-0.5, 0.5], #ändern der Werte zum testen [-0.5, 0.5]
       lin_vel_y=[-0.5, 0.5], #ändern der Werte zum testen [-0.5, 0.5]
       ang_vel_yaw=[-1.5, 1.5],
+      joint_state_delay=0.05,  # how many seconds are between a jointcommand and a response visible in jointstates
   )
 
 
@@ -241,6 +242,8 @@ class Joystick(wolvesop_base.WolvesOPEnv):
         "push": jp.array([0.0, 0.0]),
         "push_step": 0,
         "push_interval_steps": push_interval_steps,
+        "joint_buffer": jp.zeros((int(jp.ceil(self._config.joint_state_delay/self._config.ctrl_dt)+2), self._default_pose.shape[0] * 2)),
+        "joint_buffer_head": jp.int32(0),
     }
 
     metrics = {}
@@ -361,7 +364,7 @@ class Joystick(wolvesop_base.WolvesOPEnv):
         * self._config.noise_config.scales.gravity
     )
 
-    joint_angles = data.qpos[7:]
+    info["joint_buffer"], info["joint_buffer_head"], joint_angles, joint_vel = self._get_delayed_joint_data(data, info["joint_buffer"], info["joint_buffer_head"])
     info["rng"], noise_rng = jax.random.split(info["rng"])
     noisy_joint_angles = (
         joint_angles
@@ -370,7 +373,6 @@ class Joystick(wolvesop_base.WolvesOPEnv):
         * self._qpos_noise_scale
     )
 
-    joint_vel = data.qvel[6:]
     info["rng"], noise_rng = jax.random.split(info["rng"])
     noisy_joint_vel = (
         joint_vel
@@ -385,12 +387,6 @@ class Joystick(wolvesop_base.WolvesOPEnv):
 
     linvel = self.get_local_linvel(data)
     info["rng"], noise_rng = jax.random.split(info["rng"])
-    noisy_linvel = (
-        linvel
-        + (2 * jax.random.uniform(noise_rng, shape=linvel.shape) - 1)
-        * self._config.noise_config.level
-        * self._config.noise_config.scales.linvel
-    )
 
     state = jp.hstack([
         noisy_gyro,  # 3
@@ -427,6 +423,36 @@ class Joystick(wolvesop_base.WolvesOPEnv):
         "state": state,
         "privileged_state": privileged_state,
     }
+
+  def _get_delayed_joint_data(self, data: mjx.Data, buffer, head):
+    joint_angles = data.qpos[7:]
+    joint_vel = data.qvel[6:]
+    joint = jp.concatenate([joint_angles, joint_vel])
+
+    N = buffer.shape[0]
+
+    # put new state into the buffer
+    buffer = buffer.at[head].set(joint)
+    head = (head + 1) % N
+
+    # get fractional delay between the two checked frames
+    delay_steps = self._config.joint_state_delay / self._config.ctrl_dt
+    k = jp.floor(delay_steps).astype(jp.int32)
+    alpha = delay_steps - k
+
+    # get buffer indices for interpolating
+    i0 = (head - k - 1) % N
+    i1 = (head - k - 2) % N
+
+    joint0 = buffer[i0]
+    joint1 = buffer[i1]
+
+    delayed_joint = (1.0 - alpha) * joint0 + alpha * joint1
+
+    delayed_joint_pos = delayed_joint[:self._default_pose.shape[0]]
+    delayed_joint_vel = delayed_joint[self._default_pose.shape[0]:]
+
+    return buffer, head, delayed_joint_pos, delayed_joint_vel
 
   def _get_reward(
       self,

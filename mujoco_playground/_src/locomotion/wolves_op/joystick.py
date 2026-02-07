@@ -94,7 +94,7 @@ def default_config() -> config_dict.ConfigDict:
       lin_vel_x=[-0.5, 0.5], #ändern der Werte zum testen [-0.5, 0.5]
       lin_vel_y=[-0.5, 0.5], #ändern der Werte zum testen [-0.5, 0.5]
       ang_vel_yaw=[-1.5, 1.5],
-      joint_state_delay=0.05,  # how many seconds are between a jointcommand and a response visible in jointstates
+      joint_state_delay=0.0,  # how many seconds are between a jointcommand and a response visible in jointstates
   )
 
 
@@ -225,6 +225,7 @@ class Joystick(wolvesop_base.WolvesOPEnv):
     )
     push_interval_steps = jp.round(push_interval / self.dt).astype(jp.int32)
 
+    joint_buffer_size = (np.ceil(self._config.joint_state_delay/self._config.ctrl_dt)+2).astype(int)
     info = {
         "rng": rng,
         "step": 0,
@@ -242,7 +243,7 @@ class Joystick(wolvesop_base.WolvesOPEnv):
         "push": jp.array([0.0, 0.0]),
         "push_step": 0,
         "push_interval_steps": push_interval_steps,
-        "joint_buffer": jp.zeros((int(jp.ceil(self._config.joint_state_delay/self._config.ctrl_dt)+2), self._default_pose.shape[0] * 2)),
+        "joint_buffer": jp.zeros((joint_buffer_size, self._default_pose.shape[0] * 2)),
         "joint_buffer_head": jp.int32(0),
     }
 
@@ -250,6 +251,16 @@ class Joystick(wolvesop_base.WolvesOPEnv):
     for k in self._config.reward_config.scales.keys():
       metrics[f"reward/{k}"] = jp.zeros(())
     metrics["swing_peak"] = jp.zeros(())
+
+    joint_angles = data.qpos[7:]
+    joint_vel = data.qvel[6:]
+    joint = jp.concatenate([joint_angles, joint_vel]) 
+    # fill the buffer with the initial positions and velocity
+    info["joint_buffer"] = jp.repeat(
+      joint[None, :],
+      joint_buffer_size,
+      axis=0
+    )
 
     contact = jp.array([
         geoms_colliding(data, geom_id, self._floor_geom_id)
@@ -297,6 +308,11 @@ class Joystick(wolvesop_base.WolvesOPEnv):
     p_fz = p_f[..., -1]
     state.info["swing_peak"] = jp.maximum(state.info["swing_peak"], p_fz)
 
+    # update the buffer for the joint-state (position/velocity)
+    N = state.info["joint_buffer"].shape[0]
+    head = state.info["joint_buffer_head"] % N
+    state.info["joint_buffer"] = state.info["joint_buffer"].at[head].set(jp.concatenate([data.qpos[7:], data.qvel[6:]]))
+
     obs = self._get_obs(data, state.info, contact)
     done = self._get_termination(data)
 
@@ -308,6 +324,7 @@ class Joystick(wolvesop_base.WolvesOPEnv):
     }
     reward = jp.clip(sum(rewards.values()) * self.dt, 0.0, 10000.0)
 
+    state.info["joint_buffer_head"] += 1
     state.info["push"] = push
     state.info["step"] += 1
     state.info["push_step"] += 1
@@ -364,7 +381,12 @@ class Joystick(wolvesop_base.WolvesOPEnv):
         * self._config.noise_config.scales.gravity
     )
 
-    info["joint_buffer"], info["joint_buffer_head"], joint_angles, joint_vel = self._get_delayed_joint_data(data, info["joint_buffer"], info["joint_buffer_head"])
+    N = info["joint_buffer"].shape[0]
+    joint_buffer_head = info["joint_buffer_head"] % N
+    joint = info["joint_buffer"][joint_buffer_head]
+    joint_angles = joint[:self._default_pose.shape[0]]
+    joint_vel = joint[self._default_pose.shape[0]:]
+
     info["rng"], noise_rng = jax.random.split(info["rng"])
     noisy_joint_angles = (
         joint_angles
@@ -423,36 +445,6 @@ class Joystick(wolvesop_base.WolvesOPEnv):
         "state": state,
         "privileged_state": privileged_state,
     }
-
-  def _get_delayed_joint_data(self, data: mjx.Data, buffer, head):
-    joint_angles = data.qpos[7:]
-    joint_vel = data.qvel[6:]
-    joint = jp.concatenate([joint_angles, joint_vel])
-
-    N = buffer.shape[0]
-
-    # put new state into the buffer
-    buffer = buffer.at[head].set(joint)
-    head = (head + 1) % N
-
-    # get fractional delay between the two checked frames
-    delay_steps = self._config.joint_state_delay / self._config.ctrl_dt
-    k = jp.floor(delay_steps).astype(jp.int32)
-    alpha = delay_steps - k
-
-    # get buffer indices for interpolating
-    i0 = (head - k - 1) % N
-    i1 = (head - k - 2) % N
-
-    joint0 = buffer[i0]
-    joint1 = buffer[i1]
-
-    delayed_joint = (1.0 - alpha) * joint0 + alpha * joint1
-
-    delayed_joint_pos = delayed_joint[:self._default_pose.shape[0]]
-    delayed_joint_vel = delayed_joint[self._default_pose.shape[0]:]
-
-    return buffer, head, delayed_joint_pos, delayed_joint_vel
 
   def _get_reward(
       self,

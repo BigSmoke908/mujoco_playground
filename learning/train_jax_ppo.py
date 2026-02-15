@@ -200,7 +200,7 @@ _TRAINING_METRICS_STEPS = flags.DEFINE_integer(
     " experiences slowdown.",
 )
 
-_ONNX_OUTPUT_FOLDER = flags.DEFINE_string("model", None, "name of the folder to where model artifacts (onnx, ...) are exported to (leave empty to not export any artifacts)")
+_ONNX_OUTPUT_FOLDER = flags.DEFINE_string("model", "model", "name of the folder to where model artifacts (onnx, ...) are exported to (leave empty to not export any artifacts)")
 
 
 def get_rl_config(env_name: str) -> config_dict.ConfigDict:

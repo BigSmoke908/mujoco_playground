@@ -64,7 +64,7 @@ def default_config() -> config_dict.ConfigDict:
               base_height=0.0,
               # Energy related rewards.
               torques=-2.5e-5,
-              action_rate=-0.01,
+              action_rate=-0.25,
               energy=-1.e-3,
               # Feet related rewards.
               feet_clearance=0.0,
@@ -73,6 +73,7 @@ def default_config() -> config_dict.ConfigDict:
               feet_height=0.0,
               feet_phase=1.0,
               # Other rewards.
+              big_action=-0.05,
               stand_still=0.0,
               alive=0.0,
               termination=-1.0,
@@ -384,13 +385,6 @@ class Joystick(wolvesop_base.WolvesOPEnv):
     phase = jp.concatenate([cos, sin])
 
     linvel = self.get_local_linvel(data)
-    info["rng"], noise_rng = jax.random.split(info["rng"])
-    noisy_linvel = (
-        linvel
-        + (2 * jax.random.uniform(noise_rng, shape=linvel.shape) - 1)
-        * self._config.noise_config.level
-        * self._config.noise_config.scales.linvel
-    )
 
     state = jp.hstack([
         noisy_gyro,  # 3
@@ -474,6 +468,7 @@ class Joystick(wolvesop_base.WolvesOPEnv):
             info["command"],
         ),
         # Other rewards.
+        "big_action": self._cost_big_action(data.qpos[7:], self._default_pose, action),
         "alive": self._reward_alive(),
         "termination": self._cost_termination(done),
         "stand_still": self._cost_stand_still(info["command"], data.qpos[7:]),
@@ -539,6 +534,10 @@ class Joystick(wolvesop_base.WolvesOPEnv):
     return c1
 
   # Other rewards.
+
+  def _cost_big_action(self, qpos: jax.Array, default_pose: jax.Array, action: jax.Array):
+    # cost for if the current action is much different from the current pose (should prevent overshooting?)
+    return jp.sum(jp.square((qpos - default_pose) - action))
 
   def _cost_joint_pos_limits(self, qpos: jax.Array) -> jax.Array:
     out_of_limits = -jp.clip(qpos - self._soft_lowers, None, 0.0)

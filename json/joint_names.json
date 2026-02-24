@@ -1,0 +1,14 @@
+[
+    "hip_yaw_r",
+    "hip_roll_r",
+    "hip_pitch_r",
+    "knee_r",
+    "ankle_pitch_r",
+    "ankle_roll_r",
+    "hip_yaw_l",
+    "hip_roll_l",
+    "hip_pitch_l",
+    "knee_l",
+    "ankle_pitch_l",
+    "ankle_roll_l"
+]

@@ -7,3 +7,10 @@ mujoco_menagerie
 checkpoints/
 model/
 **/wandb/**
+
+
+# json data for debugging
+json/obs.json
+json/act.json
+# rollout video
+rollout.mp4

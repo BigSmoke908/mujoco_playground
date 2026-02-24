@@ -26,8 +26,9 @@ from mujoco_playground.experimental.sim2sim.keyboard_gamepad import KeyboardGame
 
 motion = 1
 _HERE = epath.Path(__file__).parent
-_MOTION_FILE = _HERE / "json" / f"motion{motion}.json"
-_JOINT_NAMES_FILE = _HERE / "json" / "joint_names.json"
+_MOTION_FILE = _HERE / ".." /"json" / f"motion{motion}.json"
+_JOINT_NAMES_FILE = _HERE / ".." / "json" / "joint_names.json"
+_OFFSET = None
 
 
 class MotionPlayer:
@@ -44,6 +45,8 @@ class MotionPlayer:
       qpos_addr: int,
       qvel_addr: int,
   ):
+    global _OFFSET
+
     self._output_names = ["continuous_actions"]
     
     self._counter = 0
@@ -59,13 +62,15 @@ class MotionPlayer:
       self._joint_command[i][:] = default_angles[:]
     
     # after that we continue to apply the same command, except for the 1 joint that is being moved in the motion
-    offset = int(rate * 2)
-    for i in range(offset, offset + len(motion)):
-      self._joint_command[i][joint] = motion[i-offset]
+    self._offset = int(rate * 2)
+    _OFFSET = self._offset
+    for i in range(self._offset, self._offset + len(motion)):
+      self._joint_command[i][joint] = motion[i-self._offset]
     
     self._original_qpos = original_qpos.copy()
     self._qpos_addr = qpos_addr
     self._qvel_addr = qvel_addr
+    print(self._offset)
 
   def get_control(self, model: mujoco.MjModel, data: mujoco.MjData) -> None:
     global sensor_addr, x, default_angles, action_scale
@@ -164,8 +169,8 @@ if __name__ == "__main__":
   viewer.launch(loader=load_callback)
 
   m = json.loads(open(_MOTION_FILE).read())
-  m["original_motion"] = [float(a) for a in actions]
-  m["recorded_motion"] = [float(a) for a in observations]
+  m["original_motion"] = [float(a) for a in actions[_OFFSET:]]
+  m["recorded_motion"] = [float(a) for a in observations[_OFFSET:]]
   open(f"json/motion{motion}sim.json", '+w').write(json.dumps(m))
 
 

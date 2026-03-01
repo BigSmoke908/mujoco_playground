@@ -2,7 +2,7 @@ import json
 from matplotlib import pyplot as plt
 
 
-motion_index = 5
+motion_index = 9
 
 original_motion = json.loads(open(f"json/motion{motion_index}.json").read())
 simulated_motion = json.loads(open(f"json/motion{motion_index}sim.json").read())

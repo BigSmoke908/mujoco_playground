@@ -22,12 +22,14 @@ import json
 
 from mujoco_playground._src.locomotion.wolves_op import wolvesop_constants
 from mujoco_playground._src.locomotion.wolves_op.base import get_assets
-from mujoco_playground.experimental.sim2sim.keyboard_gamepad import KeyboardGamepad
 
-motion = 5
+motion = 9
 _HERE = epath.Path(__file__).parent
 _MOTION_FILE = _HERE / ".." /"json" / f"motion{motion}.json"
 _JOINT_NAMES_FILE = _HERE / ".." / "json" / "joint_names.json"
+_PREWARMING_STEPS = 100  # how many steps before the actual motion will be executed
+_SIM_DT = 0.002
+_DELAY_STEPS = 3
 
 
 class MotionPlayer:
@@ -47,7 +49,7 @@ class MotionPlayer:
     self._output_names = ["continuous_actions"]
     
     # ctrl starts at 0
-    self._counter = -100
+    self._counter = -_PREWARMING_STEPS
     self._n_substeps = n_substeps
     self._motion_index = 0
     
@@ -62,6 +64,10 @@ class MotionPlayer:
     self._original_qpos = original_qpos.copy()
     self._qpos_addr = qpos_addr
     self._qvel_addr = qvel_addr
+
+    self._cmd_buffer = np.zeros(_DELAY_STEPS)
+    for i in range(_DELAY_STEPS):
+      self._cmd_buffer[i] = self._default_angles[self._joint]
 
   def get_control(self, model: mujoco.MjModel, data: mujoco.MjData) -> None:
     global sensor_addr, x, default_angles, action_scale
@@ -83,9 +89,14 @@ class MotionPlayer:
         data.qvel[jnt + self._qvel_addr + 6] = 0.0
 
     if self._counter >= 0 and self._counter % self._n_substeps == 0 and self._motion_index < self._joint_command.shape[0]:
-      data.ctrl[self._joint] = self._joint_command[self._motion_index]
+      for i in reversed(range(1, self._cmd_buffer.shape[0])):
+        self._cmd_buffer[i] = self._cmd_buffer[i-1]
+      self._cmd_buffer[0] = self._joint_command[self._motion_index]
+
+      cmd = self._cmd_buffer[-1]
+      data.ctrl[self._joint] = cmd
     
-      actions.append(self._joint_command[self._motion_index])
+      actions.append(cmd)
 
       observations.append(data.qpos[7:][self._joint])
 
@@ -110,9 +121,8 @@ def load_callback(model=None, data=None):
   joint = joint_names.index(m["joint"])
 
   ctrl_dt = 1/m["rate"]
-  sim_dt = 0.002
-  n_substeps = int(round(ctrl_dt / sim_dt))
-  model.opt.timestep = sim_dt
+  n_substeps = int(round(ctrl_dt / _SIM_DT))
+  model.opt.timestep = _SIM_DT
 
   # the controlled joint should be at the same starting position as it was for the real robot
   default_pose = np.array(model.keyframe("home").qpos[7:])
@@ -147,7 +157,19 @@ action_scale = None
 
 
 if __name__ == "__main__":
-  viewer.launch(loader=load_callback)
+  headless = True
+  if headless:
+      model, data = load_callback()
+
+      # simulate until motion is finished
+      m = json.loads(open(_MOTION_FILE).read())
+      ctrl_dt = 1/m["rate"]
+      substeps = ctrl_dt / _SIM_DT
+      steps = np.ceil(len(m["original_motion"]) * substeps + _PREWARMING_STEPS).astype(np.int32)
+      for _ in range(steps):
+          mujoco.mj_step(model, data)
+  else:
+    viewer.launch(loader=load_callback)
 
   m = json.loads(open(_MOTION_FILE).read())
   m["original_motion"] = [float(a) for a in actions]

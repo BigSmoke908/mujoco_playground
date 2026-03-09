@@ -73,7 +73,7 @@ def default_config() -> config_dict.ConfigDict:
               feet_height=0.0,
               feet_phase=1.0,
               # Other rewards.
-              big_action=-0.05,
+              big_action=-0.2,
               stand_still=0.0,
               alive=0.0,
               termination=-1.0,
@@ -536,8 +536,17 @@ class Joystick(wolvesop_base.WolvesOPEnv):
   # Other rewards.
 
   def _cost_big_action(self, qpos: jax.Array, default_pose: jax.Array, action: jax.Array):
-    # cost for if the current action is much different from the current pose (should prevent overshooting?)
-    return jp.sum(jp.square((qpos - default_pose) - action))
+    '''
+    cost for if the current action is much different from the current pose (should prevent overshooting?)
+
+    cost_per_actuator = 0 if |position-action| < eps
+                      else (|position-action| - eps)^p
+    '''
+    eps=0.05
+    p=2
+
+    d = (qpos-default_pose) - action
+    return jp.sum(jp.maximum(0.0, jp.abs(d)-eps)**p)
 
   def _cost_joint_pos_limits(self, qpos: jax.Array) -> jax.Array:
     out_of_limits = -jp.clip(qpos - self._soft_lowers, None, 0.0)

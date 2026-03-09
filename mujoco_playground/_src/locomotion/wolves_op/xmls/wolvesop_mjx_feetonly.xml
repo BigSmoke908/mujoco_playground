@@ -22,8 +22,8 @@
       <!-- Motorklassen mit unterschiedlichen Stärken ! -->
       <default class="mx106">
         <joint damping="1.7" armature="0.025" frictionloss="0.1" />
-        <!-- <position kp="21.0" ctrlrange="-3.141592 3.141592" forcerange="-8.4 8.4" /> -->
-        <position kp="600.0" kv="50" ctrlrange="-3.141592 3.141592" forcerange="-8.4 8.4" />
+        <position kp="21.0" ctrlrange="-3.141592 3.141592" forcerange="-8.4 8.4" />
+        <!-- <position kp="5" kv="0.1" ctrlrange="-3.141592 3.141592" forcerange="-8.4 8.4" /> -->
       </default>
       <default class="mx64">
         <joint damping="0.66" armature="0.012" frictionloss="0.09" />

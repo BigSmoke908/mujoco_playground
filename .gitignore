@@ -14,3 +14,5 @@ json/obs.json
 json/act.json
 # rollout video
 rollout.mp4
+
+.vscode/

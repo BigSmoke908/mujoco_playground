@@ -1,0 +1,908 @@
+{
+    "joints": [
+        "head_tilt",
+        "hip_roll_r",
+        "knee_r",
+        "shoulder_roll_r",
+        "hip_roll_l",
+        "hip_pitch_r",
+        "shoulder_pitch_r",
+        "shoulder_pitch_l",
+        "ankle_pitch_l",
+        "hip_pitch_l",
+        "shoulder_roll_l",
+        "elbow_r",
+        "hip_yaw_l",
+        "ankle_pitch_r",
+        "knee_l",
+        "ankle_roll_r",
+        "ankle_roll_l",
+        "hip_yaw_r",
+        "head_pan",
+        "elbow_l"
+    ],
+    "frames": [
+        {
+            "global_runtime_s": 0.5,
+            "completion_threshold": 0.1,
+            "curve": "linear",
+            "joint_positions": [
+                {
+                    "name": "shoulder_pitch_r",
+                    "position": -0.05,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "shoulder_pitch_l",
+                    "position": 0.01,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "shoulder_roll_r",
+                    "position": -0.17,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "shoulder_roll_l",
+                    "position": 0.17,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "elbow_r",
+                    "position": 0.83,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "elbow_l",
+                    "position": -0.83,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_yaw_r",
+                    "position": 0.02,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_yaw_l",
+                    "position": -0.04,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_roll_r",
+                    "position": -0.06,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_roll_l",
+                    "position": 0.08,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_pitch_r",
+                    "position": -0.77,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_pitch_l",
+                    "position": 0.77,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "knee_r",
+                    "position": 1.41,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "knee_l",
+                    "position": -1.38,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "ankle_pitch_r",
+                    "position": 0.45,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "ankle_pitch_l",
+                    "position": -0.46,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "ankle_roll_r",
+                    "position": -0.08,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "ankle_roll_l",
+                    "position": 0.1,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "head_pan",
+                    "position": 0.0,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "head_tilt",
+                    "position": -0.0,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                }
+            ]
+        },
+        {
+            "global_runtime_s": 0.5,
+            "completion_threshold": 0.1,
+            "curve": "linear",
+            "joint_positions": [
+                {
+                    "name": "shoulder_pitch_r",
+                    "position": -0.85,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "shoulder_pitch_l",
+                    "position": 0.83,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "shoulder_roll_r",
+                    "position": -0.39,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "shoulder_roll_l",
+                    "position": 0.42,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "elbow_r",
+                    "position": -0.8,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "elbow_l",
+                    "position": 0.86,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_yaw_r",
+                    "position": 0.02,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_yaw_l",
+                    "position": -0.04,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_roll_r",
+                    "position": -0.06,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_roll_l",
+                    "position": 0.08,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_pitch_r",
+                    "position": -0.76,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_pitch_l",
+                    "position": 0.75,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "knee_r",
+                    "position": 2.51,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "knee_l",
+                    "position": -2.51,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "ankle_pitch_r",
+                    "position": 0.44,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "ankle_pitch_l",
+                    "position": -0.46,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "ankle_roll_r",
+                    "position": -0.08,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "ankle_roll_l",
+                    "position": 0.1,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "head_pan",
+                    "position": 0.0,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "head_tilt",
+                    "position": -0.0,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                }
+            ]
+        },
+        {
+            "global_runtime_s": 0.7,
+            "completion_threshold": 0.1,
+            "curve": "linear",
+            "joint_positions": [
+                {
+                    "name": "shoulder_pitch_r",
+                    "position": 1.65,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "shoulder_pitch_l",
+                    "position": -1.57,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "shoulder_roll_r",
+                    "position": -0.47,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "shoulder_roll_l",
+                    "position": 0.56,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "elbow_r",
+                    "position": -0.84,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "elbow_l",
+                    "position": 0.86,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_yaw_r",
+                    "position": 0.02,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_yaw_l",
+                    "position": -0.04,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_roll_r",
+                    "position": -0.06,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_roll_l",
+                    "position": 0.08,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_pitch_r",
+                    "position": -0.75,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_pitch_l",
+                    "position": 0.75,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "knee_r",
+                    "position": 2.51,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "knee_l",
+                    "position": -2.5,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "ankle_pitch_r",
+                    "position": 0.45,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "ankle_pitch_l",
+                    "position": -0.46,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "ankle_roll_r",
+                    "position": -0.08,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "ankle_roll_l",
+                    "position": 0.1,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "head_pan",
+                    "position": 0.0,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "head_tilt",
+                    "position": -0.0,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                }
+            ]
+        },
+        {
+            "global_runtime_s": 1.0,
+            "completion_threshold": 0.1,
+            "curve": "linear",
+            "joint_positions": [
+                {
+                    "name": "shoulder_pitch_r",
+                    "position": 0.77,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "shoulder_pitch_l",
+                    "position": -0.6,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "shoulder_roll_r",
+                    "position": -0.44,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "shoulder_roll_l",
+                    "position": 0.54,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "elbow_r",
+                    "position": 1.62,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "elbow_l",
+                    "position": -1.41,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_yaw_r",
+                    "position": 0.02,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_yaw_l",
+                    "position": -0.05,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_roll_r",
+                    "position": -0.07,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_roll_l",
+                    "position": 0.08,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_pitch_r",
+                    "position": -1.58,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_pitch_l",
+                    "position": 1.57,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "knee_r",
+                    "position": 2.78,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "knee_l",
+                    "position": -2.8,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "ankle_pitch_r",
+                    "position": 1.56,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "ankle_pitch_l",
+                    "position": -1.57,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "ankle_roll_r",
+                    "position": -0.09,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "ankle_roll_l",
+                    "position": 0.1,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "head_pan",
+                    "position": 0.0,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "head_tilt",
+                    "position": -0.0,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                }
+            ]
+        },
+        {
+            "global_runtime_s": 0.3,
+            "completion_threshold": 0.1,
+            "curve": "linear",
+            "joint_positions": [
+                {
+                    "name": "shoulder_pitch_r",
+                    "position": 0.05,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "shoulder_pitch_l",
+                    "position": 0.05,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "shoulder_roll_r",
+                    "position": -0.39,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "shoulder_roll_l",
+                    "position": 0.54,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "elbow_r",
+                    "position": 1.63,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "elbow_l",
+                    "position": -1.43,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_yaw_r",
+                    "position": 0.02,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_yaw_l",
+                    "position": -0.04,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_roll_r",
+                    "position": -0.08,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_roll_l",
+                    "position": 0.08,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_pitch_r",
+                    "position": -0.98,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_pitch_l",
+                    "position": 0.96,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "knee_r",
+                    "position": 2.77,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "knee_l",
+                    "position": -2.75,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "ankle_pitch_r",
+                    "position": 1.55,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "ankle_pitch_l",
+                    "position": -1.56,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "ankle_roll_r",
+                    "position": -0.09,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "ankle_roll_l",
+                    "position": 0.11,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "head_pan",
+                    "position": 0.0,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "head_tilt",
+                    "position": -0.0,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                }
+            ]
+        },
+        {
+            "global_runtime_s": 1.0,
+            "completion_threshold": 0.1,
+            "curve": "linear",
+            "joint_positions": [
+                {
+                    "name": "shoulder_pitch_r",
+                    "position": -0.29,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "shoulder_pitch_l",
+                    "position": 0.28,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "shoulder_roll_r",
+                    "position": -0.17,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "shoulder_roll_l",
+                    "position": 0.18,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "elbow_r",
+                    "position": 0.82,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "elbow_l",
+                    "position": -0.81,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_yaw_r",
+                    "position": -0.0,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_yaw_l",
+                    "position": 0.0,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_roll_r",
+                    "position": -0.09,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_roll_l",
+                    "position": 0.08,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_pitch_r",
+                    "position": -0.78,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "hip_pitch_l",
+                    "position": 0.77,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "knee_r",
+                    "position": 1.18,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "knee_l",
+                    "position": -1.18,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "ankle_pitch_r",
+                    "position": 0.44,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "ankle_pitch_l",
+                    "position": -0.46,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "ankle_roll_r",
+                    "position": -0.1,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "ankle_roll_l",
+                    "position": 0.09,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "head_pan",
+                    "position": 0.0,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                },
+                {
+                    "name": "head_tilt",
+                    "position": -0.0,
+                    "effort": 1.0,
+                    "runtime_s": 0.0,
+                    "completion_required": true
+                }
+            ]
+        }
+    ]
+}

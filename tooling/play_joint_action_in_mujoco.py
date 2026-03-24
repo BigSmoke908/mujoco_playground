@@ -39,7 +39,7 @@ class MotionPlayer:
       self,
       default_angles: np.ndarray,
       n_substeps: int,
-      motion: list[int],
+      motion: list[list[int]],
       joint: int,
       original_qpos: np.ndarray,
       qpos_addr: int,
@@ -54,7 +54,7 @@ class MotionPlayer:
     self._motion_index = 0
     
     self._default_angles = default_angles
-    self._joint_command = np.zeros((len(motion)), dtype=np.float32)
+    self._joint_command = np.zeros((len(motion), len(motion[0])), dtype=np.float32)
     self._joint = joint
 
     # after that we continue to apply the same command, except for the 1 joint that is being moved in the motion
@@ -103,6 +103,21 @@ class MotionPlayer:
       self._motion_index += 1
 
 
+def load_motion(file: str):
+  '''
+  loads a motion
+  returns a tuple:
+   - list of joint-names in order
+   - list of lists with joint-positions
+   - rate
+  '''
+  m = json.loads(open(_MOTION_FILE).read())
+  joint = m["joint"]
+  positions = m["original_motion"]
+  rate = m["rate"]
+
+  return [joint], [[p] for p in positions], rate
+
 
 def load_callback(model=None, data=None):
   mujoco.set_mjcb_control(None)
@@ -116,17 +131,22 @@ def load_callback(model=None, data=None):
 
   mujoco.mj_resetDataKeyframe(model, data, 1)
 
-  m = json.loads(open(_MOTION_FILE).read())
-  joint_names = json.loads(open(_JOINT_NAMES_FILE).read())
-  joint = joint_names.index(m["joint"])
+  if _MOTION_FILE is not None and True:
+    joints_in_motion, positions, rate = load_motion(_MOTION_FILE)
+  else:
+    ...  # TODO load animation here
 
-  ctrl_dt = 1/m["rate"]
+  joint_names = json.loads(open(_JOINT_NAMES_FILE).read())
+  joint_indices = [(i, joint_names.index(joints_in_motion[i])) for i in range(len(joints_in_motion))]
+
+  ctrl_dt = 1/rate
   n_substeps = int(round(ctrl_dt / _SIM_DT))
   model.opt.timestep = _SIM_DT
 
   # the controlled joint should be at the same starting position as it was for the real robot
   default_pose = np.array(model.keyframe("home").qpos[7:])
-  default_pose[joint] = m["recorded_motion"][0]
+  for i, jnt in joint_indices:
+    default_pose[jnt] = positions[i]
 
   freejoint_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, "freejoint")
   qpos_adr = model.jnt_qposadr[freejoint_id]
@@ -136,8 +156,8 @@ def load_callback(model=None, data=None):
   policy = MotionPlayer(
       default_angles=default_pose,
       n_substeps=n_substeps,
-      motion=m["original_motion"],
-      joint=joint,
+      motion=positions,
+      joint=joint_indices,
       original_qpos=original_qpos,
       qpos_addr=qpos_adr,
       qvel_addr=qvel_adr,
